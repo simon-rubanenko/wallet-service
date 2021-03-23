@@ -1,0 +1,15 @@
+*.class
+.DS_Store
+.coverage*
+.idea/
+.bsp
+.cache/
+logs/
+.pids
+.project
+.settings
+.classpath
+build/
+out/
+dist/
+target*
