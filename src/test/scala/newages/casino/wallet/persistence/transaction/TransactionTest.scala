@@ -33,20 +33,15 @@ class TransactionTest extends AnyFunSuite with Matchers {
     probe.expectMessage(StatusReply.Success(Done))
   }
 
-//  test("should created account and added it to the wallet") {
-//    val walletId = newWalletId
-//    val accountId = AccountId("1")
-//    val currencyId = CurrencyId("USD")
-//    val wallet = testKit.spawn(WalletEntity(walletId))
-//    val probe = testKit.createTestProbe[StatusReply[Done]]()
-//    val probe2 = testKit.createTestProbe[StatusReply[WalletDetails]]()
-//    wallet ! WalletCommands.CreateWallet(probe.ref)
-//    probe.expectMessage(StatusReply.Success(Done))
-//
-//    wallet ! WalletCommands.AddAccount(accountId, currencyId, probe2.ref)
-//    probe2.expectMessage(
-//      StatusReply.Success(WalletDetails(Map(accountId -> AccountInfo(currencyId))))
-//    )
-//  }
+  test("should opened and complete transaction") {
+    val transactionId = newTransactionId
+    val payment = Payment(AccountId("1"), AccountId("2"), Money(10), PaymentTypeId("buy goods"))
+    val transaction = testKit.spawn(TransactionEntity(transactionId))
+    val probe = testKit.createTestProbe[StatusReply[Done]]()
+    transaction ! TransactionCommands.MakePayments(Set(payment), probe.ref)
+    probe.expectMessage(StatusReply.Success(Done))
+    transaction ! TransactionCommands.TransactionCompleted(probe.ref)
+    probe.expectMessage(StatusReply.Success(Done))
+  }
 
 }
