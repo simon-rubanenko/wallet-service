@@ -1,4 +1,4 @@
-name := "scalac"
+name := "newages.wallet"
 version := "0.1"
 scalaVersion := "2.13.5"
 
@@ -19,6 +19,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-slf4j" % akkaV,
   "com.typesafe.akka" %% "akka-actor-typed" % akkaV,
   "com.typesafe.akka" %% "akka-stream-typed" % akkaV,
+  "com.typesafe.akka" %% "akka-persistence-typed" % akkaV,
   "com.typesafe.akka" %% "akka-http" % akkaHttpV,
   "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
   // cats
@@ -32,6 +33,7 @@ libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % scalasticV,
   "org.scalatest" %% "scalatest" % scalasticV % Test,
   "com.typesafe.akka" %% "akka-actor-testkit-typed" % akkaV,
+  "com.typesafe.akka" %% "akka-persistence-testkit" % akkaV % Test,
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpV % Test
 )
 
