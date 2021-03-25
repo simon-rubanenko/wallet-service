@@ -13,6 +13,17 @@ package object model {
     override def toString: String = id
   }
 
+  final case class PaymentTypeId(typeId: String) extends AnyVal {
+    override def toString: String = typeId
+  }
+
+  final case class Payment(
+      accountFrom: AccountId,
+      accountTo: AccountId,
+      amount: Money,
+      paymentTypeId: PaymentTypeId
+  )
+
   final case class WalletId(id: String) extends AnyVal {
     override def toString: String = id
   }

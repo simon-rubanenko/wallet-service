@@ -52,6 +52,8 @@ object AccountCommands {
                 StatusReply.Error(s"Account $accountId is already created")
               )
           }
+
+        case AccountStates.AccountClosed => Effect.unhandled.thenNoReply()
       }
   }
 

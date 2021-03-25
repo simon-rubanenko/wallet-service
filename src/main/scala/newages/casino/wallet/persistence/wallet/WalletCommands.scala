@@ -40,7 +40,12 @@ object WalletCommands {
           cmd match {
             case c: AddAccount  => addAccount(c)
             case c: CloseWallet => closeWallet(state, c)
+            case c: CreateWallet => Effect.reply(c.replyTo)(
+                StatusReply.Error(s"Wallet $walletId is already created")
+              )
           }
+
+        case WalletStates.WalletClosed => Effect.unhandled.thenNoReply()
       }
   }
 
@@ -64,5 +69,5 @@ object WalletCommands {
       Effect.reply(cmd.replyTo)(replyAllAccountMustBeClosed)
 
   private[wallet] def replyAllAccountMustBeClosed[T]: StatusReply[T] =
-    StatusReply.Error(s"All accounts must be closed")
+    StatusReply.Error(s"All accounts in wallet must be closed")
 }
