@@ -44,4 +44,32 @@ class AccountTest extends AnyFunSuite with Matchers {
     probe2.expectMessage(StatusReply.Success(AccountBalance(Money(10.0))))
   }
 
+  test("should make withdraw and get balance") {
+    val accountId = newAccountId
+    val account = testKit.spawn(AccountEntity(accountId))
+    val probe1 = testKit.createTestProbe[StatusReply[Done]]()
+    val probe2 = testKit.createTestProbe[StatusReply[AccountBalance]]()
+    account ! AccountCommands.CreateAccount(probe1.ref)
+    probe1.expectMessage(StatusReply.Success(Done))
+    account ! AccountCommands.Deposit(Money(10.0), probe2.ref)
+    probe2.expectMessage(StatusReply.Success(AccountBalance(Money(10.0))))
+
+    account ! AccountCommands.Withdraw(Money(4.0), probe2.ref)
+    probe2.expectMessage(StatusReply.Success(AccountBalance(Money(6.0))))
+  }
+
+  test("should get error on attempt to withdraw & make negative balance") {
+    val accountId = newAccountId
+    val account = testKit.spawn(AccountEntity(accountId))
+    val probe1 = testKit.createTestProbe[StatusReply[Done]]()
+    val probe2 = testKit.createTestProbe[StatusReply[AccountBalance]]()
+    account ! AccountCommands.CreateAccount(probe1.ref)
+    probe1.expectMessage(StatusReply.Success(Done))
+    account ! AccountCommands.Deposit(Money(10.0), probe2.ref)
+    probe2.expectMessage(StatusReply.Success(AccountBalance(Money(10.0))))
+
+    account ! AccountCommands.Withdraw(Money(15.0), probe2.ref)
+    probe2.expectMessage(AccountCommands.replyInsufficientBalance(Money(10.0), Money(15.0)))
+  }
+
 }

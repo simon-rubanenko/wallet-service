@@ -8,6 +8,7 @@ object WalletStates {
 
   sealed trait WalletState {
     def applyEvent(event: WalletEvents.WalletEvent): WalletState
+    def getAccounts: Map[AccountId, AccountInfo]
   }
 
   case object InitialWallet extends WalletState {
@@ -16,25 +17,31 @@ object WalletStates {
       case _ =>
         throw new IllegalStateException(s"Unexpected event [$event] in state [InitialWallet]")
     }
+
+    def getAccounts: Map[AccountId, AccountInfo] = Map.empty
   }
 
   case class WalletCreated(accounts: Map[AccountId, AccountInfo]) extends WalletState {
     def applyEvent(event: WalletEvents.WalletEvent): WalletState = event match {
-      case WalletEvents.AccountCreated(accountId, currencyId) =>
+      case WalletEvents.AccountAdded(accountId, currencyId) =>
         copy(accounts = accounts + (accountId -> AccountInfo(currencyId)))
-
-      case WalletEvents.AccountClosed(accountId) => copy(accounts - accountId)
 
       case WalletEvents.WalletClosed => WalletClosed
 
       case WalletEvents.WalletCreated =>
         throw new IllegalStateException(s"Unexpected event [$event] in state [WalletCreated]")
     }
+
+    def getAccounts: Map[AccountId, AccountInfo] = accounts
+
+    def canCloseWallet: Boolean = true // TODO add check
   }
 
   case object WalletClosed extends WalletState {
     def applyEvent(event: WalletEvents.WalletEvent): WalletState =
       throw new IllegalStateException(s"Unexpected event [$event] in state [WalletClosed]")
+
+    def getAccounts: Map[AccountId, AccountInfo] = Map.empty
   }
 
   final case class AccountInfo(currencyId: CurrencyId)

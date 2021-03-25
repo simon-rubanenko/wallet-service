@@ -13,10 +13,16 @@ package object model {
     override def toString: String = id
   }
 
+  final case class WalletId(id: String) extends AnyVal {
+    override def toString: String = id
+  }
+
   final case class Money(value: BigDecimal) extends AnyVal {
     def >=(other: Money): Boolean = value >= other.value
     def +(other: Money): Money = Money(value + other.value)
     def -(other: Money): Money = Money(value - other.value)
+
+    override def toString: String = value.toString()
   }
 
   object Money {

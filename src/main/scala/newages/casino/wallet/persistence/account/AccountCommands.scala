@@ -41,12 +41,12 @@ object AccountCommands {
             case _                => Effect.unhandled.thenNoReply()
           }
 
-        case acc @ AccountStates.AccountOpened(_) =>
+        case state @ AccountStates.AccountOpened(_) =>
           cmd match {
             case c: Deposit      => deposit(c)
-            case c: Withdraw     => withdraw(acc, c)
-            case c: GetBalance   => getBalance(acc, c)
-            case c: CloseAccount => closeAccount(acc, c)
+            case c: Withdraw     => withdraw(state, c)
+            case c: GetBalance   => getBalance(state, c)
+            case c: CloseAccount => closeAccount(state, c)
             case c: CreateAccount =>
               Effect.reply(c.replyTo)(
                 StatusReply.Error(s"Account $accountId is already created")
@@ -74,11 +74,7 @@ object AccountCommands {
         StatusReply.success(AccountBalance(state.getBalance))
       )
     else
-      Effect.reply(cmd.replyTo)(
-        StatusReply.Error(
-          s"Insufficient balance ${state.balance} to be able to withdraw ${cmd.amount}"
-        )
-      )
+      Effect.reply(cmd.replyTo)(replyInsufficientBalance(state.balance, cmd.amount))
 
   private def getBalance(
       state: AccountStates.AccountOpened,
@@ -93,5 +89,14 @@ object AccountCommands {
     if (state.balance == Money.Zero)
       Effect.persist(AccountEvents.AccountClosed).thenReply(cmd.replyTo)(_ => StatusReply.Ack)
     else
-      Effect.reply(cmd.replyTo)(StatusReply.Error("Can't close account with non-zero balance"))
+      Effect.reply(cmd.replyTo)(replyCantCloseAccountWithNonZeroBalance)
+
+  private[account] def replyInsufficientBalance[T](
+      balance: Money,
+      withdraw: Money
+  ): StatusReply[T] =
+    StatusReply.Error(s"Insufficient balance $balance to be able to withdraw $withdraw")
+
+  private[account] def replyCantCloseAccountWithNonZeroBalance[T]: StatusReply[T] =
+    StatusReply.Error("Can't close account with non-zero balance")
 }
