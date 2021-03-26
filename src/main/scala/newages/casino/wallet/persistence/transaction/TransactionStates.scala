@@ -1,6 +1,6 @@
 package newages.casino.wallet.persistence.transaction
 
-import newages.casino.wallet.model.{CurrencyId, Payment}
+import newages.casino.wallet.model.{Currency, Payment}
 import newages.casino.wallet.persistence.transaction.TransactionEvents.TransactionEvent
 
 object TransactionStates {
@@ -38,6 +38,6 @@ object TransactionStates {
       throw new IllegalStateException(s"Unexpected event [$event] in state [TransactionCompleted]")
   }
 
-  final case class AccountInfo(currencyId: CurrencyId)
+  final case class AccountInfo(currencyId: Currency)
 
 }

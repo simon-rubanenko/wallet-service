@@ -1,6 +1,6 @@
 package newages.casino.wallet.persistence.account
 
-import newages.casino.wallet.model.Money
+import newages.casino.wallet.model.{AccountId, Money}
 
 object AccountStates {
   sealed trait AccountState {

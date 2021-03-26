@@ -1,6 +1,6 @@
 package newages.casino.wallet.persistence.wallet
 
-import newages.casino.wallet.model.{AccountId, CurrencyId}
+import newages.casino.wallet.model.{AccountId, Currency, CurrencyId}
 
 object WalletStates {
 

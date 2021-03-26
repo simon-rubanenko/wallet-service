@@ -2,9 +2,8 @@ package newages.casino.wallet.persistence.account
 
 import akka.Done
 import akka.actor.typed.ActorRef
-import akka.pattern.StatusReply
 import akka.persistence.typed.scaladsl.{Effect, ReplyEffect}
-import newages.casino.wallet.model.{AccountId, Money}
+import newages.casino.wallet.model.{AccountId, ActionResult, Money}
 import newages.casino.wallet.persistence.ProtobufSerializable
 
 object AccountCommands {
@@ -12,22 +11,22 @@ object AccountCommands {
 
   sealed trait AccountCommand extends ProtobufSerializable
 
-  final case class CreateAccount(replyTo: ActorRef[StatusReply[Done]]) extends AccountCommand
+  final case class CreateAccount(replyTo: ActorRef[ActionResult[Done]]) extends AccountCommand
 
   final case class Deposit(
       amount: Money,
-      replyTo: ActorRef[StatusReply[AccountBalance]]
+      replyTo: ActorRef[ActionResult[AccountBalance]]
   ) extends AccountCommand
 
   final case class Withdraw(
       amount: Money,
-      replyTo: ActorRef[StatusReply[AccountBalance]]
+      replyTo: ActorRef[ActionResult[AccountBalance]]
   ) extends AccountCommand
 
   final case class GetBalance(walletId: AccountId, replyTo: ActorRef[AccountBalance])
       extends AccountCommand
 
-  final case class CloseAccount(replyTo: ActorRef[StatusReply[Done]]) extends AccountCommand
+  final case class CloseAccount(replyTo: ActorRef[ActionResult[Done]]) extends AccountCommand
 
   def commandHandler(accountId: AccountId): (
       AccountStates.AccountState,
@@ -49,7 +48,7 @@ object AccountCommands {
             case c: CloseAccount => closeAccount(state, c)
             case c: CreateAccount =>
               Effect.reply(c.replyTo)(
-                StatusReply.Error(s"Account $accountId is already created")
+                ActionResult.error(s"Account $accountId is already created")
               )
           }
 
@@ -59,12 +58,12 @@ object AccountCommands {
 
   private def createAccount(cmd: CreateAccount)
       : ReplyEffect[AccountEvents.AccountEvent, AccountStates.AccountState] =
-    Effect.persist(AccountEvents.AccountCreated).thenReply(cmd.replyTo)(_ => StatusReply.Ack)
+    Effect.persist(AccountEvents.AccountCreated).thenReply(cmd.replyTo)(_ => ActionResult.done)
 
   private def deposit(cmd: Deposit)
       : ReplyEffect[AccountEvents.AccountEvent, AccountStates.AccountState] =
     Effect.persist(AccountEvents.Deposited(cmd.amount)).thenReply(cmd.replyTo)(state =>
-      StatusReply.success(AccountBalance(state.getBalance))
+      ActionResult.success(AccountBalance(state.getBalance))
     )
 
   private def withdraw(
@@ -73,7 +72,7 @@ object AccountCommands {
   ): ReplyEffect[AccountEvents.AccountEvent, AccountStates.AccountState] =
     if (state.canWithdraw(cmd.amount))
       Effect.persist(AccountEvents.Withdrawn(cmd.amount)).thenReply(cmd.replyTo)(state =>
-        StatusReply.success(AccountBalance(state.getBalance))
+        ActionResult.success(AccountBalance(state.getBalance))
       )
     else
       Effect.reply(cmd.replyTo)(replyInsufficientBalance(state.balance, cmd.amount))
@@ -89,16 +88,16 @@ object AccountCommands {
       cmd: CloseAccount
   ): ReplyEffect[AccountEvents.AccountEvent, AccountStates.AccountState] =
     if (state.balance == Money.Zero)
-      Effect.persist(AccountEvents.AccountClosed).thenReply(cmd.replyTo)(_ => StatusReply.Ack)
+      Effect.persist(AccountEvents.AccountClosed).thenReply(cmd.replyTo)(_ => ActionResult.done)
     else
       Effect.reply(cmd.replyTo)(replyCantCloseAccountWithNonZeroBalance)
 
   private[account] def replyInsufficientBalance[T](
       balance: Money,
       withdraw: Money
-  ): StatusReply[T] =
-    StatusReply.Error(s"Insufficient balance $balance to be able to withdraw $withdraw")
+  ): ActionResult[T] =
+    ActionResult.error(s"Insufficient balance $balance to be able to withdraw $withdraw")
 
-  private[account] def replyCantCloseAccountWithNonZeroBalance[T]: StatusReply[T] =
-    StatusReply.Error("Can't close account with non-zero balance")
+  private[account] def replyCantCloseAccountWithNonZeroBalance[T]: ActionResult[T] =
+    ActionResult.error("Can't close account with non-zero balance")
 }

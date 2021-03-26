@@ -20,6 +20,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor-typed" % akkaV,
   "com.typesafe.akka" %% "akka-stream-typed" % akkaV,
   "com.typesafe.akka" %% "akka-persistence-typed" % akkaV,
+  "com.typesafe.akka" %% "akka-serialization-jackson" % akkaV,
+  "com.typesafe.akka" %% "akka-cluster-typed" % akkaV,
+  "com.typesafe.akka" %% "akka-cluster-sharding-typed" % akkaV,
   "com.typesafe.akka" %% "akka-http" % akkaHttpV,
   "com.typesafe.akka" %% "akka-http-core" % akkaHttpV,
   // cats

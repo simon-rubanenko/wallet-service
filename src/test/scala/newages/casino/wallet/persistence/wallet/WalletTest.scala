@@ -4,7 +4,7 @@ import akka.Done
 import akka.actor.testkit.typed.scaladsl.{ActorTestKit, ActorTestKitBase}
 import akka.pattern.StatusReply
 import com.typesafe.config.ConfigFactory
-import newages.casino.wallet.model.{AccountId, CurrencyId, WalletId}
+import newages.casino.wallet.model.{AccountId, ActionResult, Currency, WalletId}
 import newages.casino.wallet.persistence.wallet.WalletCommands.WalletDetails
 import newages.casino.wallet.persistence.wallet.WalletStates.AccountInfo
 import org.scalatest.funsuite.AnyFunSuite
@@ -29,24 +29,24 @@ class WalletTest extends AnyFunSuite with Matchers {
   test("The wallet should be created") {
     val walletId = newWalletId
     val wallet = testKit.spawn(WalletEntity(walletId))
-    val probe = testKit.createTestProbe[StatusReply[Done]]()
+    val probe = testKit.createTestProbe[ActionResult[Done]]()
     wallet ! WalletCommands.CreateWallet(probe.ref)
-    probe.expectMessage(StatusReply.Success(Done))
+    probe.expectMessage(ActionResult.done)
   }
 
   test("should created account and added it to the wallet") {
     val walletId = newWalletId
     val accountId = AccountId("1")
-    val currencyId = CurrencyId("USD")
+    val currency = Currency.default
     val wallet = testKit.spawn(WalletEntity(walletId))
-    val probe = testKit.createTestProbe[StatusReply[Done]]()
-    val probe2 = testKit.createTestProbe[StatusReply[WalletDetails]]()
+    val probe = testKit.createTestProbe[ActionResult[Done]]()
+    val probe2 = testKit.createTestProbe[ActionResult[WalletDetails]]()
     wallet ! WalletCommands.CreateWallet(probe.ref)
-    probe.expectMessage(StatusReply.Success(Done))
+    probe.expectMessage(ActionResult.done)
 
-    wallet ! WalletCommands.AddAccount(accountId, currencyId, probe2.ref)
+    wallet ! WalletCommands.AddAccount(accountId, currency.id, probe2.ref)
     probe2.expectMessage(
-      StatusReply.Success(WalletDetails(Map(accountId -> AccountInfo(currencyId))))
+      ActionResult.success(WalletDetails(Map(accountId -> AccountInfo(currency.id))))
     )
   }
 

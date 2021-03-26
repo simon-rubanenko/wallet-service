@@ -4,7 +4,7 @@ import akka.Done
 import akka.actor.typed.ActorRef
 import akka.pattern.StatusReply
 import akka.persistence.typed.scaladsl.{Effect, ReplyEffect}
-import newages.casino.wallet.model.{AccountId, CurrencyId, WalletId}
+import newages.casino.wallet.model.{AccountId, ActionResult, CurrencyId, WalletId}
 import newages.casino.wallet.persistence.ProtobufSerializable
 import newages.casino.wallet.persistence.wallet.WalletStates.AccountInfo
 
@@ -14,14 +14,14 @@ object WalletCommands {
 
   sealed trait WalletCommand extends ProtobufSerializable
 
-  final case class CreateWallet(replyTo: ActorRef[StatusReply[Done]]) extends WalletCommand
+  final case class CreateWallet(replyTo: ActorRef[ActionResult[Done]]) extends WalletCommand
 
   final case class CloseWallet(replyTo: ActorRef[StatusReply[Done]]) extends WalletCommand
 
   final case class AddAccount(
       accountId: AccountId,
       currencyId: CurrencyId,
-      replyTo: ActorRef[StatusReply[WalletDetails]]
+      replyTo: ActorRef[ActionResult[WalletDetails]]
   ) extends WalletCommand
 
   def commandHandler(walletId: WalletId): (
@@ -41,7 +41,7 @@ object WalletCommands {
             case c: AddAccount  => addAccount(c)
             case c: CloseWallet => closeWallet(state, c)
             case c: CreateWallet => Effect.reply(c.replyTo)(
-                StatusReply.Error(s"Wallet $walletId is already created")
+                ActionResult.error(s"Wallet $walletId is already created")
               )
           }
 
@@ -51,13 +51,13 @@ object WalletCommands {
 
   private def createWallet(cmd: CreateWallet)
       : ReplyEffect[WalletEvents.WalletEvent, WalletStates.WalletState] =
-    Effect.persist(WalletEvents.WalletCreated).thenReply(cmd.replyTo)(_ => StatusReply.Ack)
+    Effect.persist(WalletEvents.WalletCreated).thenReply(cmd.replyTo)(_ => ActionResult.done)
 
   private def addAccount(cmd: AddAccount)
       : ReplyEffect[WalletEvents.WalletEvent, WalletStates.WalletState] =
     Effect.persist(WalletEvents.AccountAdded(cmd.accountId, cmd.currencyId)).thenReply(
       cmd.replyTo
-    )(state => StatusReply.success(WalletDetails(state.getAccounts)))
+    )(state => ActionResult.success(WalletDetails(state.getAccounts)))
 
   private def closeWallet(
       state: WalletStates.WalletCreated,
