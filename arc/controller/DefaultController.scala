@@ -10,7 +10,8 @@ import newages.casino.wallet.persistence.account.AccountCommands.AccountCommand
 import newages.casino.wallet.persistence.transaction.TransactionCommands.TransactionCommand
 import newages.casino.wallet.persistence.wallet.WalletCommands
 import newages.casino.wallet.persistence.wallet.WalletCommands.{WalletCommand, WalletDetails}
-import newages.casino.wallet.service.{AccountService, GeneratorService}
+import newages.casino.wallet.service.GeneratorService
+import newages.casino.wallet.service.account.AccountService
 
 import scala.concurrent.{ExecutionContext, Future}
 

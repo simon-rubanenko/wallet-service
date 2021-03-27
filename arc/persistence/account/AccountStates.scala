@@ -10,12 +10,12 @@ object AccountStates {
 
   case object InitialAccount extends AccountState {
     def applyEvent(event: AccountEvents.AccountEvent): AccountState = event match {
-      case AccountEvents.AccountCreated => AccountOpened(Money.Zero)
+      case AccountEvents.AccountCreated => AccountOpened(Money.Zero())
       case _ =>
         throw new IllegalStateException(s"Unexpected event [$event] in state [InitialAccount]")
     }
 
-    def getBalance: Money = Money.Zero
+    def getBalance: Money = Money.Zero()
   }
 
   case class AccountOpened(balance: Money) extends AccountState {

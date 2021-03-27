@@ -1,14 +1,20 @@
 package newages.casino.wallet.service
 
-trait GeneratorService {
-  def nextId: String
+import cats.Functor
+import cats.effect.{IO, Sync}
+import cats.effect.concurrent.Ref
+
+trait GeneratorService[F[_], A] {
+  def nextId: F[A]
 }
 
-class SimpleRandomGeneratorService extends GeneratorService {
-  override def nextId: String = java.util.UUID.randomUUID().toString
+class SimpleIncrementalGeneratorService[F[_]: Functor](value: Ref[F, Long])
+    extends GeneratorService[F, String] {
+  override def nextId: F[String] =
+    Functor[F].map(value.getAndUpdate(_ + 1))(_.toString)
 }
 
-class SimpleIncrementalGeneratorService extends GeneratorService {
-  val atomLong = new java.util.concurrent.atomic.AtomicLong(1)
-  override def nextId: String = atomLong.getAndIncrement().toString
+object SimpleIncrementalGeneratorService {
+  def makeRef: IO[GeneratorService[IO, String]] =
+    Ref.of(0L)(Sync[IO]).map(new SimpleIncrementalGeneratorService(_))
 }

@@ -61,13 +61,4 @@ package object model {
   }
 
   final case class AccountInfo(balance: Amount, currencyId: CurrencyId)
-
-  type ActionResult[T] = Either[Throwable, T]
-
-  object ActionResult {
-    def error[T](message: String): ActionResult[T] = Left(new Throwable(message))
-    def done: ActionResult[Done] = Right(Done)
-    def success[T](a: T): ActionResult[T] = Right(a)
-  }
-
 }

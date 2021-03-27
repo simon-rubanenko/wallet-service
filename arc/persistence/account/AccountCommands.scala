@@ -87,7 +87,7 @@ object AccountCommands {
       state: AccountStates.AccountOpened,
       cmd: CloseAccount
   ): ReplyEffect[AccountEvents.AccountEvent, AccountStates.AccountState] =
-    if (state.balance == Money.Zero)
+    if (state.balance == Money.Zero())
       Effect.persist(AccountEvents.AccountClosed).thenReply(cmd.replyTo)(_ => ActionResult.done)
     else
       Effect.reply(cmd.replyTo)(replyCantCloseAccountWithNonZeroBalance)

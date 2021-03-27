@@ -8,6 +8,7 @@ import akka.util.Timeout
 import newages.casino.wallet.model.{AccountId, ActionResult}
 import newages.casino.wallet.persistence.account.AccountCommands.{AccountCommand, CreateAccount}
 import newages.casino.wallet.persistence.account.AccountEntity
+import newages.casino.wallet.service.account.AccountService
 
 import scala.concurrent.Future
 
