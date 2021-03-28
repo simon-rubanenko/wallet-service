@@ -3,6 +3,7 @@ package newages.casino.wallet
 import cats.effect.{ExitCode, IO, IOApp}
 import newages.casino.wallet.service.account.{AccountPersistence, AccountService}
 import newages.casino.wallet.service.SimpleIncrementalGeneratorService
+import newages.casino.wallet.service.player.{PlayerPersistence, PlayerService}
 import newages.casino.wallet.service.wallet.{WalletPersistence, WalletService}
 
 object Server extends IOApp {
@@ -13,5 +14,7 @@ object Server extends IOApp {
       accountService = AccountService(generator, accountPersistence)
       walletPersistence = WalletPersistence()
       walletService = WalletService(accountService, walletPersistence)
+      playerPersistence = PlayerPersistence()
+      playerService = PlayerService(playerPersistence)
     } yield ExitCode.Success
 }

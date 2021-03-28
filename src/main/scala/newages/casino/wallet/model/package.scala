@@ -1,7 +1,5 @@
 package newages.casino.wallet
 
-import akka.Done
-
 package object model {
 
   object AccountType extends Enumeration {
@@ -59,6 +57,8 @@ package object model {
     val USD: Currency = Currency(CurrencyId("840"), "USD")
     val default: Currency = USD
   }
+
+  final case class PlayerInfo(playerId: PlayerId, defaultAccount: Money)
 
   final case class AccountInfo(balance: Amount, currencyId: CurrencyId)
 }
