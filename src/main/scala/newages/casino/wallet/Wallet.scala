@@ -2,11 +2,11 @@ package newages.casino.wallet
 
 import cats.effect.IO
 import newages.casino.wallet.Transaction.OperationResult
-import newages.casino.wallet.domain.{ActionResult, Done}
+import newages.casino.wallet.domain.ActionResult
 import newages.casino.wallet.model._
 
 object domain {
-  case object Error extends Throwable
+  case class Error(message: String) extends Throwable(message)
 
   type ActionResult[T] = Either[Error, T]
 
@@ -20,6 +20,8 @@ object domain {
   object ActionResult {
     val done = Right(Done)
     def success[A](a: A): ActionResult[A] = Right(a)
+    def error[A](message: String): ActionResult[A] = Left(Error(message))
+    def error[A](e: Error): ActionResult[A] = Left(e)
   }
 }
 

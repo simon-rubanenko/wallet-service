@@ -2,17 +2,59 @@ package newages.casino.wallet.service.wallet
 
 import cats.effect.IO
 import newages.casino.wallet.domain.{ActionResult, Done}
-import newages.casino.wallet.model.AccountId
+import newages.casino.wallet.model.{AccountId, CurrencyId, WalletId}
+import newages.casino.wallet.persistence.DoobiePersistence
+import doobie.implicits._
 
 trait WalletPersistence {
-  def addAccount(accountId: AccountId): IO[ActionResult[Done]]
+  def addWallet(walletId: WalletId): IO[ActionResult[Done]]
+
+  def addAccount(
+      walletId: WalletId,
+      accountId: AccountId,
+      currencyId: CurrencyId
+  ): IO[ActionResult[Done]]
+
+  def getAccountByCurrency(
+      walletId: WalletId,
+      currencyId: CurrencyId
+  ): IO[ActionResult[Option[AccountId]]]
 }
 
 object WalletPersistence {
-  def apply(): WalletPersistence = new WalletPersistenceImpl()
+  def apply(db: DoobiePersistence): WalletPersistence = new WalletPersistenceImpl(db)
 }
 
-class WalletPersistenceImpl extends WalletPersistence {
-  def addAccount(accountId: AccountId): IO[ActionResult[Done]] = ???
+class WalletPersistenceImpl(val db: DoobiePersistence) extends WalletPersistence {
+  def addWallet(walletId: WalletId): IO[ActionResult[Done]] =
+    sql"""insert into wallet.wallet(wallet_id) values(${walletId.id})"""
+      .update
+      .run
+      .transact(db.autoCommitTransactor)
+      .map(_ => ActionResult.done)
 
+  def addAccount(
+      walletId: WalletId,
+      accountId: AccountId,
+      currencyId: CurrencyId
+  ): IO[ActionResult[Done]] =
+    sql"""insert into wallet.wallet_account(wallet_account_wallet_id, wallet_account_account_id, wallet_account_currency_id) 
+         values(${walletId.id}, ${accountId.id}, ${currencyId.id})"""
+      .update
+      .run
+      .transact(db.autoCommitTransactor)
+      .map(_ => ActionResult.done)
+
+  def getAccountByCurrency(
+      walletId: WalletId,
+      currencyId: CurrencyId
+  ): IO[ActionResult[Option[AccountId]]] =
+    sql"""select wallet_account_account_id
+         from wallet.wallet_account
+         where wallet_account_wallet_id = ${walletId.id}
+          and wallet_account_currency_id = ${currencyId.id}"""
+      .query[AccountId]
+      .option
+      .transact(db.autoCommitTransactor)
+      .map(id => ActionResult.success(id))
 }

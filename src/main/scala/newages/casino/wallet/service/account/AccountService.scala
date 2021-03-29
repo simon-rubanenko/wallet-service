@@ -1,7 +1,7 @@
 package newages.casino.wallet.service.account
 
 import cats.effect.IO
-import newages.casino.wallet.domain.ActionResult
+import newages.casino.wallet.domain.{ActionResult, Done}
 import newages.casino.wallet.model.AccountId
 import newages.casino.wallet.service.GeneratorService
 
@@ -10,7 +10,10 @@ trait AccountService {
 }
 
 object AccountService {
-  def apply(generator: GeneratorService[IO, String], persistence: AccountPersistence) =
+  def apply(
+      generator: GeneratorService[IO, String],
+      persistence: AccountPersistence
+  ): AccountService =
     new AccountServiceImpl(generator, persistence)
 }
 
@@ -19,5 +22,12 @@ class AccountServiceImpl(
     persistence: AccountPersistence
 ) extends AccountService {
   override def createAccount: IO[ActionResult[AccountId]] =
-    generator.nextId.map(v => ActionResult.success(AccountId(v)))
+    (for {
+      id <- generator.nextId
+      result <- persistence.addAccount(AccountId(id))
+    } yield (result, id))
+      .map {
+        case (Right(Done), id) => ActionResult.success(AccountId(id))
+        case (Left(e), _)      => ActionResult.error(e)
+      }
 }

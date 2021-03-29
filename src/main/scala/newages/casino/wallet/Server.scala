@@ -30,7 +30,7 @@ object Server extends IOApp {
       )(dbContext)
 
       accountPersistence = AccountPersistence(db)
-      walletPersistence = WalletPersistence()
+      walletPersistence = WalletPersistence(db)
       playerPersistence = PlayerPersistence()
 
       accountService = AccountService(generator, accountPersistence)
