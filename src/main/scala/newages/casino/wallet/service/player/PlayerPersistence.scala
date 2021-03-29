@@ -1,22 +1,32 @@
 package newages.casino.wallet.service.player
 
 import cats.effect.IO
-import newages.casino.wallet.domain.{ActionResult, Done}
-import newages.casino.wallet.model.PlayerId
+import newages.casino.wallet.model.{PlayerId, WalletId}
+import newages.casino.wallet.persistence.DoobiePersistence
+import doobie.implicits._
 
 trait PlayerPersistence {
-  def addPlayer(playerId: PlayerId): IO[ActionResult[Done]]
-  def getPlayer(playerId: PlayerId): IO[ActionResult[Option[PlayerInfoDao]]]
+  def addPlayer(playerId: PlayerId, walletId: WalletId): IO[Unit]
+  def getPlayerWalletId(playerId: PlayerId): IO[Option[WalletId]]
 }
 
 object PlayerPersistence {
-  def apply(): PlayerPersistence = new PlayerPersistenceImpl()
+  def apply(db: DoobiePersistence): PlayerPersistence = new PlayerPersistenceImpl(db)
 }
 
-class PlayerPersistenceImpl extends PlayerPersistence {
-  def addPlayer(playerId: PlayerId): IO[ActionResult[Done]] = ???
+class PlayerPersistenceImpl(val db: DoobiePersistence) extends PlayerPersistence {
+  def addPlayer(playerId: PlayerId, walletId: WalletId): IO[Unit] =
+    sql"""insert into player.player(player_id, player_wallet_id) 
+         values(${playerId.id}, ${walletId.id})"""
+      .update
+      .run
+      .transact(db.autoCommitTransactor)
+      .map(_ => ())
 
-  def getPlayer(playerId: PlayerId): IO[ActionResult[Option[PlayerInfoDao]]] = ???
+  def getPlayerWalletId(playerId: PlayerId): IO[Option[WalletId]] =
+    sql"""select player_wallet_id from player.player
+          where player_id = ${playerId.id}"""
+      .query[WalletId]
+      .option
+      .transact(db.autoCommitTransactor)
 }
-
-final case class PlayerInfoDao(playerId: PlayerId, active: Boolean)

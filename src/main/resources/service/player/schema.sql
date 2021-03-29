@@ -6,4 +6,3 @@ create table player.player (
     player_create_dt timestamp with time zone not null default current_timestamp,
     player_delete_dt timestamp with time zone default null
 );
-
