@@ -35,12 +35,7 @@ class PlayerServiceTest
     val accountId = AccountId("acc#1")
     val currencyId = Currency.default.id
     whenF(persistenceMock.addPlayer(playerId, walletId)).thenReturn(())
-    whenF(persistenceMock.getPlayerWalletId(any[PlayerId])).thenAnswer { id: PlayerId =>
-      id match {
-        case p: PlayerId if p == playerId => Some(walletId)
-        case _                            => None
-      }
-    }
+    whenF(persistenceMock.getPlayerWalletId(playerId)).thenReturn(Some(walletId))
     whenF(walletServiceMock.createWallet).thenReturn(walletId)
     whenF(walletServiceMock.getAccountIdByCurrency(walletId, currencyId)).thenReturn(
       Some(accountId)
@@ -51,10 +46,20 @@ class PlayerServiceTest
       accountId <- playerService.getDefaultAccountId(playerId)
     } yield accountId)
       .unsafeRunSync() shouldEqual Some(accountId)
+  }
 
+  test("should throw Throwable id player not found") {
+    val playerId = PlayerId("player#2")
+    val walletId = WalletId("wallet#2")
+    whenF(persistenceMock.addPlayer(playerId, walletId)).thenReturn(())
+    whenF(persistenceMock.getPlayerWalletId(any[PlayerId])).thenReturn(None)
+    whenF(walletServiceMock.createWallet).thenReturn(walletId)
+    val playerService = PlayerService(walletServiceMock, persistenceMock)
     assertThrows[Throwable] {
-      playerService
-        .getDefaultAccountId(PlayerId("unknown player id"))
+      (for {
+        _ <- playerService.register(playerId)
+        _ <- playerService.getDefaultAccountId(PlayerId("unknown player id"))
+      } yield ())
         .unsafeRunSync()
     }
   }
