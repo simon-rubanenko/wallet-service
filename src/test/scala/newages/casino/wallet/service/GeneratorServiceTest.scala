@@ -8,10 +8,8 @@ import org.scalatest.matchers.should.Matchers
 class GeneratorServiceTest extends AnyFunSuite with Matchers {
 
   test("should return seq") {
-    val refIO = Ref.of(1L)(Sync[IO])
     val result = for {
-      ref <- refIO
-      gen = new SimpleIncrementalGeneratorService(ref)
+      gen <- SimpleIncrementalGeneratorService.makeRef
       v1 <- gen.nextId
       v2 <- gen.nextId
     } yield (v1, v2)

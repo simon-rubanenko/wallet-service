@@ -1,8 +1,8 @@
 package newages.casino.wallet
 
-import com.github.dockerjava.api.model.ExposedPort
+import com.github.dockerjava.api.model.{ExposedPort, InternetProtocol, PortBinding, Ports}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration.FiniteDuration
 
 package object utils {
@@ -25,11 +25,23 @@ package object utils {
 
     def withReadyChecker(readyChecker: DockerReadyChecker): DockerContainer =
       copy(readyChecker = Some(readyChecker))
+
+    def getTcpPortsMapping: Map[Int, Int] =
+      portsMapping.collect {
+        case (from: ExposedPort, to) if from.getProtocol == InternetProtocol.TCP =>
+          from.getPort -> to
+      }
+
+    def getPortBindings: Set[PortBinding] =
+      portsMapping.collect {
+        case (from: ExposedPort, to) if from.getProtocol == InternetProtocol.TCP =>
+          new PortBinding(Ports.Binding.bindPort(to), from)
+      }.toSet
   }
 
   trait DockerReadyChecker {
     val attempt: Int
     val delay: FiniteDuration
-    def check: Future[Boolean]
+    def check(implicit ec: ExecutionContext): Future[Boolean]
   }
 }

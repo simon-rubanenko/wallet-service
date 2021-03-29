@@ -2,15 +2,14 @@ package newages.casino.wallet.utils
 
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.CreateContainerResponse
-import com.github.dockerjava.api.model.{ExposedPort, Image}
+import com.github.dockerjava.api.model.{ExposedPort, HostConfig, Image, Ports}
 import com.github.dockerjava.core.{DefaultDockerClientConfig, DockerClientImpl}
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 
 import java.util
 import java.util.{Timer, TimerTask}
-import scala.annotation.tailrec
-import scala.concurrent.{ExecutionContext, Future, Promise}
-import scala.concurrent.duration.FiniteDuration
+import scala.concurrent.{Await, ExecutionContext, Future, Promise}
+import scala.concurrent.duration.{Duration, FiniteDuration}
 import scala.jdk.CollectionConverters._
 
 trait DockerKit {
@@ -33,7 +32,9 @@ trait DockerKit {
   lazy val cmd: CreateContainerResponse = dockerClient
     .createContainerCmd(dockerContainer.image)
     .withExposedPorts(dockerContainer.portsMapping.keySet.toList.asJava)
-    .withPortSpecs(dockerContainer.portsMapping.map(p => s":${p._1}:${p._2}").toList.asJava)
+    .withHostConfig(new HostConfig().withPortBindings(
+      dockerContainer.getPortBindings.toList.asJava
+    ))
     .withEnv(dockerContainer.env.toList.asJava)
     .withName(dockerContainer.name.getOrElse(s"image name is [${dockerContainer.image}]"))
     .exec()
@@ -41,7 +42,12 @@ trait DockerKit {
   def startContainer()(implicit ec: ExecutionContext): Unit = {
     dockerClient.startContainerCmd(cmd.getId)
       .exec()
-    dockerContainer.readyChecker.foreach(v => waitForReady(v.check, v.attempt, v.delay))
+    dockerContainer
+      .readyChecker
+      .map(v => waitForReady(v.check, v.attempt, v.delay))
+      .foreach { f =>
+        val r = Await.result(f, Duration.Inf)
+      }
   }
 
   def stopContainer(): Unit = {

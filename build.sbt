@@ -38,6 +38,8 @@ libraryDependencies ++= Seq(
   "org.tpolecat" %% "doobie-core" % doobieV,
   "org.tpolecat" %% "doobie-postgres" % doobieV,
   "org.tpolecat" %% "doobie-postgres-circe" % doobieV,
+  "org.tpolecat" %% "doobie-hikari" % doobieV,
+  "org.tpolecat" %% "doobie-quill" % doobieV,
   // Testing
   "org.scalactic" %% "scalactic" % scalasticV,
   "org.scalatest" %% "scalatest" % scalasticV % Test,

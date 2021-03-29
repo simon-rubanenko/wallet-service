@@ -28,7 +28,10 @@ package object model {
     override def toString: String = id
   }
 
-  case class Amount(value: BigDecimal) extends AnyVal
+  case class Amount(value: BigDecimal) extends AnyVal {
+    def +(other: Amount): Amount = copy(value = value + other.value)
+    def -(other: Amount): Amount = copy(value = value - other.value)
+  }
 
   final case class Money(amount: Amount, currency: Currency) {
     /*

@@ -1,28 +1,21 @@
 package newages.casino.wallet.service.account
 
 import cats.effect.IO
-import com.github.dockerjava.api.model.{ExposedPort, Frame, HostConfig, Ports}
-import com.github.dockerjava.core.DefaultDockerClientConfig
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-import com.github.dockerjava.core.DockerClientImpl
-import com.github.dockerjava.httpclient5.ApacheDockerHttpClient
 import doobie._
-import doobie.postgres.implicits._
 import doobie.implicits._
-import doobie.util.ExecutionContexts
-import doobie.implicits._
-import cats._
-import cats.data._
 import cats.effect._
-import cats.implicits._
-import com.github.dockerjava.api.async.ResultCallback
+import cats.implicits.catsSyntaxEitherId
+import newages.casino.wallet.model.{AccountId, Amount}
+import newages.casino.wallet.persistence.DoobiePersistence
 import newages.casino.wallet.utils.DockerPostgreService
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.jdk.CollectionConverters._
+import scala.io.Source
+import scala.util.Try
 
 class AccountPersistenceTest
     extends AnyFunSuite
@@ -30,9 +23,16 @@ class AccountPersistenceTest
     with DockerPostgreService
     with BeforeAndAfterAll {
 
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+
+  val db: DoobiePersistence = makeDoobiePersistence
+
   override protected def beforeAll(): Unit = {
     super.beforeAll()
     startContainer()
+    createAccountSchema("/service/account/schema.sql")
+      .transact(db.autoCommitTransactor)
+      .unsafeRunSync()
   }
 
   override def afterAll(): Unit = {
@@ -40,33 +40,47 @@ class AccountPersistenceTest
     stopContainer()
   }
 
-  implicit val cs = IO.contextShift(ExecutionContext.global)
+  def createAccountSchema(schemaPath: String): doobie.ConnectionIO[Int] = {
+    val schema = Try(Source.fromInputStream(this.getClass.getResourceAsStream(schemaPath)).mkString)
+      .getOrElse(
+        throw new Exception(
+          "can't read file: " + schemaPath + "\n probably need to add resource to BUILD file"
+        )
+      )
 
-  case class Player(player_id: String)
+    Fragment.const(schema)
+      .update
+      .run
+  }
 
-  test("should connect to postgre db in docker") {
-    ///
-    val xa = Transactor.fromDriverManager[IO](
-      "org.postgresql.Driver",
-      "jdbc:postgresql://localhost:5432/postgres",
-      "nph",
-      "suitup"
-    )
-
-    val result = (for {
-      _ <- sql"CREATE DATABASE test1".update.run
-      _ <- sql"create table test1.player(player_id VARCHAR(255))".update.run
-      c <- sql"insert into test1.player values('player id 1')".update.run
-      res <- sql"select * from test1.player".query[Player].option
-    } yield res)
-      .transact(xa)
-      .attempt
-      .map {
-        case Left(e) => println(s"E = $e")
-      }
+  test("should make deposit on account") {
+    val accountPersistence = AccountPersistence(db)
+    val accountId = AccountId("acc#1")
+    val (balance1, balance2) = (for {
+      _ <- accountPersistence.addAccount(accountId)
+      balance1 <- accountPersistence.deposit(accountId, Amount(123.45))
+      balance2 <- accountPersistence.getBalance(accountId)
+    } yield (balance1, balance2))
       .unsafeRunSync()
 
-    println(s"RESULT = $result")
+    balance1 shouldEqual balance2
+    balance2 shouldEqual Amount(123.45).asRight
+  }
+
+  test("should make withdraw from account") {
+    val accountPersistence = AccountPersistence(db)
+    val accountId = AccountId("acc#2")
+    val (balance1, balance2, balance3) = (for {
+      _ <- accountPersistence.addAccount(accountId)
+      balance1 <- accountPersistence.deposit(accountId, Amount(123.45))
+      balance2 <- accountPersistence.withdraw(accountId, Amount(100.00))
+      balance3 <- accountPersistence.getBalance(accountId)
+    } yield (balance1, balance2, balance3))
+      .unsafeRunSync()
+
+    balance1 shouldEqual Amount(123.45).asRight
+    balance2 shouldEqual balance3
+    balance3 shouldEqual Amount(23.45).asRight
   }
 
 }
