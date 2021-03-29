@@ -34,6 +34,6 @@ object Server extends IOApp {
 
       accountService = AccountService(generator, accountPersistence)
       walletService = WalletService(generator, accountService, walletPersistence)
-      playerService = PlayerService(playerPersistence)
+      playerService = PlayerService(walletService, playerPersistence)
     } yield ExitCode.Success
 }
