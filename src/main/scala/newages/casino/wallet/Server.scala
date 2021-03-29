@@ -1,8 +1,7 @@
 package newages.casino.wallet
 
-import cats.effect.{ExitCode, IO, IOApp, Resource, Sync}
-import com.typesafe.config.{Config, ConfigFactory}
-import doobie.util.ExecutionContexts
+import cats.effect.{ExitCode, IO, IOApp}
+import com.typesafe.config.ConfigFactory
 import newages.casino.wallet.persistence.DoobiePersistence
 import newages.casino.wallet.service.account.{AccountPersistence, AccountService}
 import newages.casino.wallet.service.SimpleIncrementalGeneratorService
@@ -34,7 +33,7 @@ object Server extends IOApp {
       playerPersistence = PlayerPersistence()
 
       accountService = AccountService(generator, accountPersistence)
-      walletService = WalletService(accountService, walletPersistence)
+      walletService = WalletService(generator, accountService, walletPersistence)
       playerService = PlayerService(playerPersistence)
     } yield ExitCode.Success
 }

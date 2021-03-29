@@ -4,7 +4,7 @@ import cats.effect.{IO, _}
 import doobie._
 import doobie.implicits._
 import newages.casino.wallet.domain.ActionResult
-import newages.casino.wallet.model.{AccountId, Amount, Currency, CurrencyId, WalletId}
+import newages.casino.wallet.model.{AccountId, Currency, CurrencyId, WalletId}
 import newages.casino.wallet.persistence.DoobiePersistence
 import newages.casino.wallet.utils.DockerPostgreService
 import org.scalatest.BeforeAndAfterAll

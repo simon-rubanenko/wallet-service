@@ -8,7 +8,7 @@ import newages.casino.wallet.persistence.DoobiePersistence
 import doobie.implicits._
 
 trait AccountPersistence {
-  def addAccount(accountId: AccountId): IO[ActionResult[Done]]
+  def addAccount(accountId: AccountId): IO[Unit]
   def deposit(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]]
   def withdraw(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]]
   def getBalance(accountId: AccountId): IO[ActionResult[Amount]]
@@ -19,12 +19,12 @@ object AccountPersistence {
 }
 
 class AccountPersistenceImpl(db: DoobiePersistence) extends AccountPersistence {
-  override def addAccount(accountId: AccountId): IO[ActionResult[Done]] =
+  override def addAccount(accountId: AccountId): IO[Unit] =
     sql"""insert into account.account(account_id, account_balance) values(${accountId.id}, 0)"""
       .update
       .run
       .transact(db.autoCommitTransactor)
-      .map(_ => ActionResult.done)
+      .map(_ => ())
 
   override def deposit(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]] =
     (for {
