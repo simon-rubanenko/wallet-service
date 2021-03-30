@@ -47,7 +47,9 @@ libraryDependencies ++= Seq(
   "org.mockito" %% "mockito-scala-cats" % mockitoV % Test,
   // docker
   "com.github.docker-java" % "docker-java" % dockerJavaV,
-  "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaV
+  "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaV,
+  // somonr-utils
+  "io.simonr" %% "util-docker" % "0.1.1-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(

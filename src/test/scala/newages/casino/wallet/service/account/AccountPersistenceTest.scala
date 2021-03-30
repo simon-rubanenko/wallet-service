@@ -7,9 +7,9 @@ import org.scalatest.matchers.should.Matchers
 import doobie._
 import doobie.implicits._
 import cats.effect._
+import io.simonr.utils.docker.DockerPostgreService
+import io.simonr.utils.doobie.DoobiePersistence
 import newages.casino.wallet.model.{AccountId, Amount}
-import newages.casino.wallet.service.DoobiePersistence
-import newages.casino.wallet.utils.DockerPostgreService
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.ExecutionContext.Implicits.global

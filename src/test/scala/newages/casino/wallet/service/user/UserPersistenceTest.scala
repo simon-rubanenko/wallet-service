@@ -3,9 +3,9 @@ package newages.casino.wallet.service.user
 import cats.effect.{IO, _}
 import doobie._
 import doobie.implicits._
+import io.simonr.utils.docker.DockerPostgreService
+import io.simonr.utils.doobie.DoobiePersistence
 import newages.casino.wallet.model.{UserId, WalletId}
-import newages.casino.wallet.service.DoobiePersistence
-import newages.casino.wallet.utils.DockerPostgreService
 import org.scalatest.BeforeAndAfterAll
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers

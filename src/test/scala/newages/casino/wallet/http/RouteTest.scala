@@ -6,7 +6,7 @@ import io.circe.generic.semiauto.deriveDecoder
 import io.circe.syntax.EncoderOps
 import newages.casino.wallet.controller
 import newages.casino.wallet.controller.{Balance, Error, WalletController}
-import org.http4s.{HttpRoutes, Request, Response, _}
+import org.http4s.{Request, _}
 import org.http4s.implicits._
 import org.http4s.dsl.io._
 import org.mockito.cats.MockitoCats.whenF

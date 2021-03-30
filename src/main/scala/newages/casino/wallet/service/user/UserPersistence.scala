@@ -3,7 +3,7 @@ package newages.casino.wallet.service.user
 import cats.effect.IO
 import newages.casino.wallet.model.{UserId, WalletId}
 import doobie.implicits._
-import newages.casino.wallet.service.DoobiePersistence
+import io.simonr.utils.doobie.DoobiePersistence
 
 trait UserPersistence {
   def addUser(playerId: UserId, walletId: WalletId): IO[Unit]
