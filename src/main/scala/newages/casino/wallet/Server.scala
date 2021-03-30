@@ -2,9 +2,8 @@ package newages.casino.wallet
 
 import cats.effect.{ExitCode, IO, IOApp}
 import com.typesafe.config.ConfigFactory
-import newages.casino.wallet.persistence.DoobiePersistence
 import newages.casino.wallet.service.account.{AccountPersistence, AccountService}
-import newages.casino.wallet.service.GeneratorService
+import newages.casino.wallet.service.{DoobiePersistence, GeneratorService}
 import newages.casino.wallet.service.player.{PlayerPersistence, PlayerService}
 import newages.casino.wallet.service.wallet.{WalletPersistence, WalletService}
 

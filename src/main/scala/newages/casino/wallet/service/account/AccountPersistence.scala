@@ -3,8 +3,8 @@ package newages.casino.wallet.service.account
 import cats.effect.IO
 import doobie.implicits.toSqlInterpolator
 import newages.casino.wallet.model.{AccountId, Amount}
-import newages.casino.wallet.persistence.DoobiePersistence
 import doobie.implicits._
+import newages.casino.wallet.service.DoobiePersistence
 
 trait AccountPersistence {
   def addAccount(accountId: AccountId): IO[Unit]

@@ -1,4 +1,4 @@
-package newages.casino.wallet.persistence
+package newages.casino.wallet.service
 
 import cats.effect.{Blocker, ContextShift, IO}
 import doobie.free.connection.setAutoCommit

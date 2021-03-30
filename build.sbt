@@ -11,6 +11,7 @@ val sttpV = "3.1.9"
 val dockerJavaV = "3.2.7"
 val doobieV = "0.12.1"
 val mockitoV = "1.16.32"
+val http4sV = "0.21.21"
 
 libraryDependencies ++= Seq(
   // logger
@@ -25,12 +26,18 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeV,
   "io.circe" %% "circe-generic" % circeV,
   "io.circe" %% "circe-parser" % circeV,
+  "io.circe" %% "circe-literal" % circeV,
   // Doobie / PostgreSQL
   "org.tpolecat" %% "doobie-core" % doobieV,
   "org.tpolecat" %% "doobie-postgres" % doobieV,
   "org.tpolecat" %% "doobie-postgres-circe" % doobieV,
   "org.tpolecat" %% "doobie-hikari" % doobieV,
   "org.tpolecat" %% "doobie-quill" % doobieV,
+  // http4s
+  "org.http4s" %% "http4s-dsl" % http4sV,
+  "org.http4s" %% "http4s-blaze-server" % http4sV,
+  "org.http4s" %% "http4s-blaze-client" % http4sV,
+  "org.http4s" %% "http4s-circe" % http4sV,
   // Testing
   "org.scalactic" %% "scalactic" % scalasticV % Test,
   "org.scalatest" %% "scalatest" % scalasticV % Test,

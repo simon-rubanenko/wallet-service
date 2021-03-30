@@ -7,9 +7,8 @@ import org.scalatest.matchers.should.Matchers
 import doobie._
 import doobie.implicits._
 import cats.effect._
-import cats.implicits.catsSyntaxEitherId
 import newages.casino.wallet.model.{AccountId, Amount}
-import newages.casino.wallet.persistence.DoobiePersistence
+import newages.casino.wallet.service.DoobiePersistence
 import newages.casino.wallet.utils.DockerPostgreService
 
 import scala.concurrent.ExecutionContext

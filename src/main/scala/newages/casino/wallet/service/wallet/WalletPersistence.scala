@@ -2,8 +2,8 @@ package newages.casino.wallet.service.wallet
 
 import cats.effect.IO
 import newages.casino.wallet.model.{AccountId, CurrencyId, WalletId}
-import newages.casino.wallet.persistence.DoobiePersistence
 import doobie.implicits._
+import newages.casino.wallet.service.DoobiePersistence
 
 trait WalletPersistence {
   def addWallet(walletId: WalletId): IO[Unit]

@@ -2,7 +2,7 @@ package newages.casino.wallet.utils
 
 import cats.effect.{ContextShift, IO}
 import com.github.dockerjava.api.model.ExposedPort
-import newages.casino.wallet.persistence.DoobiePersistence
+import newages.casino.wallet.service.DoobiePersistence
 
 import java.sql.DriverManager
 import scala.concurrent.{ExecutionContext, Future}
