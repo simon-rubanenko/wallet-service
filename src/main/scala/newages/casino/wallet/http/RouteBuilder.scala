@@ -37,17 +37,17 @@ object RouteBuilder extends controller.JsonEncoders {
           .withdraw(playerId, amount)
           .map(validateResult)
 
-      case GET -> Root / "balance" / playerId =>
-        Ok(s"Balance, $playerId")
-
+      case GET -> Root / "wallet" / "balance" / playerId =>
+        walletController
+          .getBalance(playerId)
+          .map(validateResult)
     }
 
   private def validateResult(result: Either[controller.Error, Balance]): Response[IO] =
     result match {
-      case Right(v) =>
-        Response(status = Ok).withEntity(v.asJson)
-      case Left(e) => Response(status = Status.BadRequest).withEntity(e.asJson)
+      case Right(v) => Response(status = Ok).withEntity(v.asJson)
 
+      case Left(e) => Response(status = Status.BadRequest).withEntity(e.asJson)
     }
 
   private object BigDecimalVar {

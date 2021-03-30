@@ -1,7 +1,7 @@
 package newages.casino.wallet.service.account
 
 import cats.effect.IO
-import newages.casino.wallet.model.AccountId
+import newages.casino.wallet.model.{AccountId, Amount}
 import newages.casino.wallet.service.GeneratorService
 import org.mockito.cats.MockitoCats.whenF
 import org.mockito.scalatest.{MockitoSugar, ResetMocksAfterEachTest}
@@ -40,5 +40,16 @@ class AccountServiceTest
         .unsafeRunSync()
     }
     verify(persistenceMock, times(1)).addAccount(accountId)
+  }
+
+  test("should got balance") {
+    val accountId = AccountId("acc#1")
+    val amount = Amount(12.34)
+    whenF(persistenceMock.getBalance(accountId)).thenReturn(amount)
+    val accountService = AccountService(generatorMock, persistenceMock)
+    accountService
+      .getBalance(accountId)
+      .unsafeRunSync() shouldEqual amount
+    verify(persistenceMock, times(1)).getBalance(accountId)
   }
 }

@@ -3,6 +3,7 @@ package newages.casino.wallet
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax._
+import newages.casino.wallet.model.PlayerId
 
 package object controller {
   trait JsonBase
@@ -18,4 +19,9 @@ package object controller {
     implicit lazy val errorEncoder: Encoder[Error] = deriveEncoder
     implicit lazy val balanceEncoder: Encoder[Balance] = deriveEncoder
   }
+
+  object PlayerIdValidator {
+    def parse(value: String): PlayerId = PlayerId(value)
+  }
+
 }

@@ -106,4 +106,31 @@ class RouteTest
     response.as[Json].unsafeRunSync() shouldEqual message.asJson
   }
 
+  test("should get balance") {
+    val amount = BigDecimal(12.34)
+    val balance = Balance(amount)
+    whenF(controllerMock.getBalance(any)).thenReturn(Right(balance))
+
+    val service = RouteBuilder.makeRoute(controllerMock)
+    val request = Request[IO](GET, Uri.unsafeFromString(s"/wallet/balance/player1"))
+    val response = service
+      .orNotFound(request)
+      .unsafeRunSync()
+    response.status shouldEqual Status.Ok
+    response.as[Json].unsafeRunSync() shouldEqual balance.asJson
+  }
+
+  test("should got error message on get balance") {
+    val message = Error("player not found")
+    whenF(controllerMock.getBalance(any)).thenReturn(Left(message))
+
+    val service = RouteBuilder.makeRoute(controllerMock)
+    val request = Request[IO](GET, uri"/wallet/balance/player1")
+    val response = service
+      .orNotFound(request)
+      .unsafeRunSync()
+    response.status shouldEqual Status.BadRequest
+    response.as[Json].unsafeRunSync() shouldEqual message.asJson
+  }
+
 }
