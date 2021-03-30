@@ -4,7 +4,7 @@ import cats.effect.{ExitCode, IO, IOApp}
 import com.typesafe.config.ConfigFactory
 import newages.casino.wallet.persistence.DoobiePersistence
 import newages.casino.wallet.service.account.{AccountPersistence, AccountService}
-import newages.casino.wallet.service.SimpleIncrementalGeneratorService
+import newages.casino.wallet.service.GeneratorService
 import newages.casino.wallet.service.player.{PlayerPersistence, PlayerService}
 import newages.casino.wallet.service.wallet.{WalletPersistence, WalletService}
 
@@ -15,7 +15,7 @@ object Server extends IOApp {
 
   override def run(args: List[String]): IO[ExitCode] =
     for {
-      generator <- SimpleIncrementalGeneratorService.makeRef
+      generator <- GeneratorService.makeRef
 
       cf <- IO.delay(ConfigFactory.defaultApplication())
       dbContext <- IO.delay(

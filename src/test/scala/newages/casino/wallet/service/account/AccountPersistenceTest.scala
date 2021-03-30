@@ -64,7 +64,7 @@ class AccountPersistenceTest
       .unsafeRunSync()
 
     balance1 shouldEqual balance2
-    balance2 shouldEqual Amount(123.45).asRight
+    balance2 shouldEqual Amount(123.45)
   }
 
   test("should make withdraw from account") {
@@ -78,9 +78,9 @@ class AccountPersistenceTest
     } yield (balance1, balance2, balance3))
       .unsafeRunSync()
 
-    balance1 shouldEqual Amount(123.45).asRight
+    balance1 shouldEqual Amount(123.45)
     balance2 shouldEqual balance3
-    balance3 shouldEqual Amount(23.45).asRight
+    balance3 shouldEqual Amount(23.45)
   }
 
 }

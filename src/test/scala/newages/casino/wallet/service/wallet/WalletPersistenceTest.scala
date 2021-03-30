@@ -3,7 +3,6 @@ package newages.casino.wallet.service.wallet
 import cats.effect.{IO, _}
 import doobie._
 import doobie.implicits._
-import newages.casino.wallet.domain.ActionResult
 import newages.casino.wallet.model.{AccountId, Currency, CurrencyId, WalletId}
 import newages.casino.wallet.persistence.DoobiePersistence
 import newages.casino.wallet.utils.DockerPostgreService
@@ -55,9 +54,8 @@ class WalletPersistenceTest
   test("should add wallet") {
     val walletPersistence = WalletPersistence(db)
     val walletId = WalletId("wallet#1")
-    val result = walletPersistence.addWallet(walletId)
-      .unsafeRunSync()
-    result shouldEqual ActionResult.done
+    walletPersistence.addWallet(walletId)
+      .unsafeRunSync() shouldEqual ()
 
     sql"""select wallet_id from wallet.wallet where wallet_id = ${walletId.id}"""
       .query[WalletId]
@@ -71,10 +69,9 @@ class WalletPersistenceTest
     val walletId = WalletId("wallet#1")
     val accountId = AccountId("acc#1")
     val currency = Currency.default
-    val result = walletPersistence
+    walletPersistence
       .addAccount(walletId, accountId, currency.id)
-      .unsafeRunSync()
-    result shouldEqual ActionResult.done
+      .unsafeRunSync() shouldEqual ()
 
     val selectRes =
       sql"""select wallet_account_wallet_id, wallet_account_account_id, wallet_account_currency_id
@@ -106,8 +103,8 @@ class WalletPersistenceTest
     } yield (acc1, acc2))
       .unsafeRunSync()
 
-    acc1 shouldEqual ActionResult.success(Some(accountId))
-    acc2 shouldEqual ActionResult.success(None)
+    acc1 shouldEqual Some(accountId)
+    acc2 shouldEqual None
   }
 
 }

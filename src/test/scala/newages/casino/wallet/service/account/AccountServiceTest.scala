@@ -1,7 +1,6 @@
 package newages.casino.wallet.service.account
 
 import cats.effect.IO
-import newages.casino.wallet.domain.ActionResult
 import newages.casino.wallet.model.AccountId
 import newages.casino.wallet.service.GeneratorService
 import org.mockito.cats.MockitoCats.whenF
@@ -21,11 +20,11 @@ class AccountServiceTest
   test("should add new account") {
     val accountId = AccountId("acc#1")
     whenF(generatorMock.nextId).thenReturn(accountId.id)
-    whenF(persistenceMock.addAccount(accountId)).thenReturn(ActionResult.done)
+    whenF(persistenceMock.addAccount(accountId)).thenReturn(())
     val accountService = AccountService(generatorMock, persistenceMock)
     accountService
       .createAccount
-      .unsafeRunSync() shouldEqual ActionResult.success(accountId)
+      .unsafeRunSync() shouldEqual accountId
     verify(persistenceMock, times(1)).addAccount(accountId)
   }
 
@@ -33,12 +32,13 @@ class AccountServiceTest
     val accountId = AccountId("acc#1")
     val errorMessage = "some error message"
     whenF(generatorMock.nextId).thenReturn(accountId.id)
-    whenF(persistenceMock.addAccount(accountId)).thenReturn(ActionResult.error(errorMessage))
+    when(persistenceMock.addAccount(accountId)).thenReturn(IO.raiseError(new Throwable))
     val accountService = AccountService(generatorMock, persistenceMock)
-    accountService
-      .createAccount
-      .unsafeRunSync() shouldEqual ActionResult.error(errorMessage)
+    assertThrows[Throwable] {
+      accountService
+        .createAccount
+        .unsafeRunSync()
+    }
     verify(persistenceMock, times(1)).addAccount(accountId)
   }
-
 }

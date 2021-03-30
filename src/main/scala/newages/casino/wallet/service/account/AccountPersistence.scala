@@ -2,16 +2,15 @@ package newages.casino.wallet.service.account
 
 import cats.effect.IO
 import doobie.implicits.toSqlInterpolator
-import newages.casino.wallet.domain.{ActionResult, Done}
 import newages.casino.wallet.model.{AccountId, Amount}
 import newages.casino.wallet.persistence.DoobiePersistence
 import doobie.implicits._
 
 trait AccountPersistence {
   def addAccount(accountId: AccountId): IO[Unit]
-  def deposit(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]]
-  def withdraw(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]]
-  def getBalance(accountId: AccountId): IO[ActionResult[Amount]]
+  def deposit(accountId: AccountId, amount: Amount): IO[Amount]
+  def withdraw(accountId: AccountId, amount: Amount): IO[Amount]
+  def getBalance(accountId: AccountId): IO[Amount]
 }
 
 object AccountPersistence {
@@ -26,28 +25,25 @@ class AccountPersistenceImpl(db: DoobiePersistence) extends AccountPersistence {
       .transact(db.autoCommitTransactor)
       .map(_ => ())
 
-  override def deposit(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]] =
+  override def deposit(accountId: AccountId, amount: Amount): IO[Amount] =
     (for {
       balance <- fetchBalance(accountId)
       newBalance = balance + amount
       _ <- updateBalance(accountId, newBalance)
     } yield newBalance)
       .transact(db.defaultTransactor)
-      .map(ActionResult.success)
 
-  override def withdraw(accountId: AccountId, amount: Amount): IO[ActionResult[Amount]] =
+  override def withdraw(accountId: AccountId, amount: Amount): IO[Amount] =
     (for {
       balance <- fetchBalance(accountId)
       newBalance = balance - amount
       _ <- updateBalance(accountId, newBalance)
     } yield newBalance)
       .transact(db.defaultTransactor)
-      .map(ActionResult.success)
 
-  override def getBalance(accountId: AccountId): IO[ActionResult[Amount]] =
+  override def getBalance(accountId: AccountId): IO[Amount] =
     fetchBalance(accountId)
       .transact(db.autoCommitTransactor)
-      .map(balance => ActionResult.success(balance))
 
   private def fetchBalance(accountId: AccountId): doobie.ConnectionIO[Amount] =
     sql"""select 

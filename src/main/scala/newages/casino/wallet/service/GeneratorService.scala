@@ -14,7 +14,7 @@ class SimpleIncrementalGeneratorService[F[_]: Functor](value: Ref[F, Long])
     Functor[F].map(value.getAndUpdate(_ + 1))(_.toString)
 }
 
-object SimpleIncrementalGeneratorService {
+object GeneratorService {
   def makeRef: IO[GeneratorService[IO, String]] =
-    Ref.of(0L)(Sync[IO]).map(new SimpleIncrementalGeneratorService(_))
+    Ref.of(1L)(Sync[IO]).map(new SimpleIncrementalGeneratorService(_))
 }
