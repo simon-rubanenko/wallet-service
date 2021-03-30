@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.io.Source
 import scala.util.Try
 
-class PlayerPersistenceTest
+class UserPersistenceTest
     extends AnyFunSuite
     with Matchers
     with DockerPostgreService
@@ -51,27 +51,27 @@ class PlayerPersistenceTest
       .run
   }
 
-  test("should add player") {
-    val playerPersistence = PlayerPersistence(db)
-    val playerId = UserId("player#1")
+  test("should add user") {
+    val userPersistence = UserPersistence(db)
+    val userId = UserId("user#1")
     val walletId = WalletId("wallet#1")
-    playerPersistence.addPlayer(playerId, walletId)
+    userPersistence.addUser(userId, walletId)
       .unsafeRunSync() shouldEqual ()
 
-    sql"""select player_id from player.player where player_id = ${playerId.id}"""
+    sql"""select user_id from user.user where user_id = ${userId.id}"""
       .query[UserId]
       .option
       .transact(db.autoCommitTransactor)
-      .unsafeRunSync() shouldEqual Some(playerId)
+      .unsafeRunSync() shouldEqual Some(userId)
   }
 
-  test("should return player wallet id") {
-    val playerPersistence = PlayerPersistence(db)
-    val playerId = UserId("player#2")
+  test("should return user wallet id") {
+    val userPersistence = UserPersistence(db)
+    val userId = UserId("user#2")
     val walletId = WalletId("wallet#2")
     (for {
-      _ <- playerPersistence.addPlayer(playerId, walletId)
-      walletId <- playerPersistence.getUserWalletId(playerId)
+      _ <- userPersistence.addUser(userId, walletId)
+      walletId <- userPersistence.getUserWalletId(userId)
     } yield walletId)
       .unsafeRunSync() shouldEqual Some(walletId)
   }

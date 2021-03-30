@@ -5,17 +5,17 @@ import newages.casino.wallet.model.{UserId, WalletId}
 import doobie.implicits._
 import newages.casino.wallet.service.DoobiePersistence
 
-trait PlayerPersistence {
-  def addPlayer(playerId: UserId, walletId: WalletId): IO[Unit]
+trait UserPersistence {
+  def addUser(playerId: UserId, walletId: WalletId): IO[Unit]
   def getUserWalletId(playerId: UserId): IO[Option[WalletId]]
 }
 
-object PlayerPersistence {
-  def apply(db: DoobiePersistence): PlayerPersistence = new PlayerPersistenceImpl(db)
+object UserPersistence {
+  def apply(db: DoobiePersistence): UserPersistence = new PlayerPersistenceImpl(db)
 }
 
-class PlayerPersistenceImpl(val db: DoobiePersistence) extends PlayerPersistence {
-  def addPlayer(userId: UserId, walletId: WalletId): IO[Unit] =
+class PlayerPersistenceImpl(val db: DoobiePersistence) extends UserPersistence {
+  def addUser(userId: UserId, walletId: WalletId): IO[Unit] =
     sql"""insert into user.user(user_id, user_wallet_id) 
          values(${userId.id}, ${walletId.id})"""
       .update

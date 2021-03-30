@@ -6,7 +6,7 @@ import newages.casino.wallet.controller.WalletController
 import newages.casino.wallet.http.RouteBuilder
 import newages.casino.wallet.service.account.{AccountPersistence, AccountService}
 import newages.casino.wallet.service.{DoobiePersistence, GeneratorService}
-import newages.casino.wallet.service.user.{PlayerPersistence, UserService}
+import newages.casino.wallet.service.user.{UserPersistence, UserService}
 import newages.casino.wallet.service.wallet.{WalletPersistence, WalletService}
 import org.http4s.implicits.http4sKleisliResponseSyntaxOptionT
 import org.http4s.server.blaze.BlazeServerBuilder
@@ -37,7 +37,7 @@ object Server extends IOApp {
 
       accountPersistence = AccountPersistence(db)
       walletPersistence = WalletPersistence(db)
-      userPersistence = PlayerPersistence(db)
+      userPersistence = UserPersistence(db)
 
       accountService = AccountService(generator, accountPersistence)
       walletService = WalletService(generator, accountService, walletPersistence)
@@ -55,4 +55,6 @@ object Server extends IOApp {
         .as(ExitCode.Success)
 
     } yield result
+
+  def startPersistenceInDocker(): Unit = {}
 }

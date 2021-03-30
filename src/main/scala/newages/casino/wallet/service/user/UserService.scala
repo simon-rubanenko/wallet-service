@@ -11,18 +11,18 @@ trait UserService {
 }
 
 object UserService {
-  def apply(walletService: WalletService, persistence: PlayerPersistence) =
+  def apply(walletService: WalletService, persistence: UserPersistence) =
     new PlayerServiceImpl(walletService, persistence)
 }
 
 class PlayerServiceImpl(
     walletService: WalletService,
-    persistence: PlayerPersistence
+    persistence: UserPersistence
 ) extends UserService {
   override def register(userId: UserId): IO[Unit] =
     for {
       walletId <- walletService.createWallet
-      _ <- persistence.addPlayer(userId, walletId)
+      _ <- persistence.addUser(userId, walletId)
     } yield ()
 
   def getDefaultAccountId(userId: UserId): IO[AccountId] = {
