@@ -1,20 +1,12 @@
 package newages.casino.wallet.http
 
-import cats.data.Kleisli
 import cats.effect.IO
-import fs2.Stream
-import fs2.text.utf8Encode
-import io.circe.Encoder
-import io.circe.generic.auto.exportEncoder
-import io.circe.generic.semiauto.deriveEncoder
 import newages.casino.wallet.controller
-import newages.casino.wallet.controller.{Balance, JsonBase, WalletController}
-import org.http4s.{EntityBody, HttpRoutes, Request, Response, _}
-import org.http4s.implicits._
+import newages.casino.wallet.controller.{Balance, WalletController}
+import org.http4s.{HttpRoutes, Response, _}
 import org.http4s.dsl.io._
 import io.circe.syntax._
 import org.http4s.circe.CirceEntityEncoder._
-import org.http4s.dsl.impl.PathVar
 
 import scala.util.Try
 

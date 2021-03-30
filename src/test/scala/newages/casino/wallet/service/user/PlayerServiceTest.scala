@@ -1,4 +1,4 @@
-package newages.casino.wallet.service.player
+package newages.casino.wallet.service.user
 
 import newages.casino.wallet.model.{AccountId, Currency, PlayerId, WalletId}
 import newages.casino.wallet.service.wallet.WalletService

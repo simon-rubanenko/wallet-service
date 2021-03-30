@@ -1,4 +1,4 @@
-package newages.casino.wallet.service.player
+package newages.casino.wallet.service.user
 
 import cats.effect.IO
 import newages.casino.wallet.model.{PlayerId, WalletId}

@@ -1,4 +1,4 @@
-package newages.casino.wallet.service.player
+package newages.casino.wallet.service.user
 
 import cats.data.OptionT
 import cats.effect.IO

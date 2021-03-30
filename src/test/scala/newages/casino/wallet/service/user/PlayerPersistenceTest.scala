@@ -1,4 +1,4 @@
-package newages.casino.wallet.service.player
+package newages.casino.wallet.service.user
 
 import cats.effect.{IO, _}
 import doobie._
@@ -28,7 +28,7 @@ class PlayerPersistenceTest
   override protected def beforeAll(): Unit = {
     super.beforeAll()
     startContainer()
-    createWalletSchema("/service/player/schema.sql")
+    createWalletSchema("/service/user/schema.sql")
       .transact(db.autoCommitTransactor)
       .unsafeRunSync()
   }

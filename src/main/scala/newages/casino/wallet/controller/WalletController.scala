@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.implicits.catsSyntaxEitherId
 import newages.casino.wallet.model.Amount
 import newages.casino.wallet.service.account.AccountService
-import newages.casino.wallet.service.player.PlayerService
+import newages.casino.wallet.service.user.PlayerService
 
 trait WalletController {
   def registerPlayer(playerId: String): IO[Either[Error, Balance]]
@@ -60,6 +60,13 @@ class WalletControllerImpl(
       }
   }
 
-  override def getBalance(playerId: String): IO[Either[Error, Balance]] = ???
+  override def getBalance(playerIdStr: String): IO[Either[Error, Balance]] = {
+    val playerId = PlayerIdValidator.parse(playerIdStr)
+    (for {
+      accountId <- playerService.getDefaultAccountId(playerId)
+      balance <- accountService.getBalance(accountId)
+    } yield balance)
+      .map(v => Balance(v.value).asRight)
+  }
 
 }

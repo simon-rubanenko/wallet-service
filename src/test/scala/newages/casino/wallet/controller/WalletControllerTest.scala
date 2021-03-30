@@ -3,7 +3,7 @@ package newages.casino.wallet.controller
 import cats.implicits.catsSyntaxEitherId
 import newages.casino.wallet.model.{AccountId, Amount, PlayerId}
 import newages.casino.wallet.service.account.AccountService
-import newages.casino.wallet.service.player.PlayerService
+import newages.casino.wallet.service.user.PlayerService
 import org.mockito.cats.MockitoCats.whenF
 import org.mockito.scalatest.{MockitoSugar, ResetMocksAfterEachTest}
 import org.scalatest.funsuite.AnyFunSuite
@@ -67,6 +67,23 @@ class WalletControllerTest
       .withdraw(playerId.id, amount.value)
       .unsafeRunSync()
     result shouldEqual Error("Insufficient funds").asLeft
+
+    verify(playerService, times(1)).getDefaultAccountId(playerId)
+    verify(accountService, times(1)).getBalance(accountId)
+  }
+
+  test("should return balance") {
+    val playerId = PlayerId("player#1")
+    val accountId = AccountId("acc#1")
+    val amount = Amount(12.34)
+    whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
+    whenF(accountService.getBalance(accountId)).thenReturn(amount)
+
+    val walletController = WalletController(playerService, accountService)
+    val result = walletController
+      .getBalance(playerId.id)
+      .unsafeRunSync()
+    result shouldEqual Balance(amount.value).asRight
 
     verify(playerService, times(1)).getDefaultAccountId(playerId)
     verify(accountService, times(1)).getBalance(accountId)
