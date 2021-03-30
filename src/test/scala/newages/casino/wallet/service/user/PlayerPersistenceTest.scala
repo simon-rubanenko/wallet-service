@@ -3,7 +3,7 @@ package newages.casino.wallet.service.user
 import cats.effect.{IO, _}
 import doobie._
 import doobie.implicits._
-import newages.casino.wallet.model.{PlayerId, WalletId}
+import newages.casino.wallet.model.{UserId, WalletId}
 import newages.casino.wallet.service.DoobiePersistence
 import newages.casino.wallet.utils.DockerPostgreService
 import org.scalatest.BeforeAndAfterAll
@@ -53,13 +53,13 @@ class PlayerPersistenceTest
 
   test("should add player") {
     val playerPersistence = PlayerPersistence(db)
-    val playerId = PlayerId("player#1")
+    val playerId = UserId("player#1")
     val walletId = WalletId("wallet#1")
     playerPersistence.addPlayer(playerId, walletId)
       .unsafeRunSync() shouldEqual ()
 
     sql"""select player_id from player.player where player_id = ${playerId.id}"""
-      .query[PlayerId]
+      .query[UserId]
       .option
       .transact(db.autoCommitTransactor)
       .unsafeRunSync() shouldEqual Some(playerId)
@@ -67,11 +67,11 @@ class PlayerPersistenceTest
 
   test("should return player wallet id") {
     val playerPersistence = PlayerPersistence(db)
-    val playerId = PlayerId("player#2")
+    val playerId = UserId("player#2")
     val walletId = WalletId("wallet#2")
     (for {
       _ <- playerPersistence.addPlayer(playerId, walletId)
-      walletId <- playerPersistence.getPlayerWalletId(playerId)
+      walletId <- playerPersistence.getUserWalletId(playerId)
     } yield walletId)
       .unsafeRunSync() shouldEqual Some(walletId)
   }

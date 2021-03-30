@@ -7,7 +7,7 @@ package object model {
     val User, Casino = Value
   }
 
-  final case class PlayerId(id: String) extends AnyVal
+  final case class UserId(id: String) extends AnyVal
 
   final case class AccountId(id: String) extends AnyVal {
     override def toString: String = id
@@ -47,7 +47,7 @@ package object model {
     def Zero(currency: Currency = Currency.default): Money = Money(Amount(0.0), currency)
   }
 
-  final case class PlayerBalance(playerId: PlayerId, balance: Money)
+  final case class PlayerBalance(playerId: UserId, balance: Money)
 
   final case class TransactionId(id: String) extends AnyVal
 
@@ -61,7 +61,7 @@ package object model {
     val default: Currency = USD
   }
 
-  final case class PlayerInfo(playerId: PlayerId, defaultAccount: Money)
+  final case class PlayerInfo(playerId: UserId, defaultAccount: Money)
 
   final case class AccountInfo(balance: Amount, currencyId: CurrencyId)
 }

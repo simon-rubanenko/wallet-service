@@ -16,7 +16,7 @@ object RouteBuilder extends controller.JsonEncoders {
     HttpRoutes.of[IO] {
       case PUT -> Root / "wallet" / "register" / playerId =>
         walletController
-          .registerPlayer(playerId)
+          .registerUser(playerId)
           .map(validateResult)
 
       case POST -> Root / "wallet" / "deposit" / playerId / BigDecimalVar(amount) =>

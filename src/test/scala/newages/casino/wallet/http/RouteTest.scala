@@ -28,7 +28,7 @@ class RouteTest
 
   test("should register player and return it balance") {
     val balance = Balance(0.0)
-    whenF(controllerMock.registerPlayer(any)).thenReturn(Right(balance))
+    whenF(controllerMock.registerUser(any)).thenReturn(Right(balance))
 
     val service = RouteBuilder.makeRoute(controllerMock)
     val request = Request[IO](PUT, uri"/wallet/register/player1")
@@ -41,7 +41,7 @@ class RouteTest
 
   test("should got error player already registered by register") {
     val message = Error("player already registered")
-    whenF(controllerMock.registerPlayer(any)).thenReturn(Left(message))
+    whenF(controllerMock.registerUser(any)).thenReturn(Left(message))
 
     val service = RouteBuilder.makeRoute(controllerMock)
     val request = Request[IO](PUT, uri"/wallet/register/player1")

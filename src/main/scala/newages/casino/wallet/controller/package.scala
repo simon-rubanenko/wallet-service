@@ -3,7 +3,7 @@ package newages.casino.wallet
 import io.circe.Encoder
 import io.circe.generic.semiauto.deriveEncoder
 import io.circe.syntax._
-import newages.casino.wallet.model.PlayerId
+import newages.casino.wallet.model.UserId
 
 package object controller {
   trait JsonBase
@@ -21,7 +21,7 @@ package object controller {
   }
 
   object PlayerIdValidator {
-    def parse(value: String): PlayerId = PlayerId(value)
+    def parse(value: String): UserId = UserId(value)
   }
 
 }

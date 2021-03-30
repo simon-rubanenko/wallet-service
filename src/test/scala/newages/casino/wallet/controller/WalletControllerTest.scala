@@ -1,9 +1,9 @@
 package newages.casino.wallet.controller
 
 import cats.implicits.catsSyntaxEitherId
-import newages.casino.wallet.model.{AccountId, Amount, PlayerId}
+import newages.casino.wallet.model.{AccountId, Amount, UserId}
 import newages.casino.wallet.service.account.AccountService
-import newages.casino.wallet.service.user.PlayerService
+import newages.casino.wallet.service.user.UserService
 import org.mockito.cats.MockitoCats.whenF
 import org.mockito.scalatest.{MockitoSugar, ResetMocksAfterEachTest}
 import org.scalatest.funsuite.AnyFunSuite
@@ -15,11 +15,11 @@ class WalletControllerTest
     with MockitoSugar
     with ResetMocksAfterEachTest {
 
-  val playerService: PlayerService = mock[PlayerService]
+  val playerService: UserService = mock[UserService]
   val accountService: AccountService = mock[AccountService]
 
   test("should register player") {
-    val playerId = PlayerId("player#1")
+    val playerId = UserId("player#1")
     val accountId = AccountId("acc#1")
     val balance = Amount(12.34)
     whenF(playerService.register(playerId)).thenReturn(())
@@ -28,7 +28,7 @@ class WalletControllerTest
 
     val walletController = WalletController(playerService, accountService)
     val result = walletController
-      .registerPlayer(playerId.id)
+      .registerUser(playerId.id)
       .unsafeRunSync()
     result shouldEqual Balance(balance.value).asRight
 
@@ -38,7 +38,7 @@ class WalletControllerTest
   }
 
   test("should withdraw funds") {
-    val playerId = PlayerId("player#1")
+    val playerId = UserId("player#1")
     val accountId = AccountId("acc#1")
     val amount = Amount(12.34)
     whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
@@ -56,7 +56,7 @@ class WalletControllerTest
   }
 
   test("should throw Insufficient funds") {
-    val playerId = PlayerId("player#1")
+    val playerId = UserId("player#1")
     val accountId = AccountId("acc#1")
     val amount = Amount(12.34)
     whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
@@ -73,7 +73,7 @@ class WalletControllerTest
   }
 
   test("should return balance") {
-    val playerId = PlayerId("player#1")
+    val playerId = UserId("player#1")
     val accountId = AccountId("acc#1")
     val amount = Amount(12.34)
     whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)

@@ -2,15 +2,15 @@ package newages.casino.wallet.service.user
 
 import cats.data.OptionT
 import cats.effect.IO
-import newages.casino.wallet.model.{AccountId, Currency, PlayerId, WalletId}
+import newages.casino.wallet.model.{AccountId, Currency, UserId, WalletId}
 import newages.casino.wallet.service.wallet.WalletService
 
-trait PlayerService {
-  def register(playerId: PlayerId): IO[Unit]
-  def getDefaultAccountId(playerId: PlayerId): IO[AccountId]
+trait UserService {
+  def register(playerId: UserId): IO[Unit]
+  def getDefaultAccountId(playerId: UserId): IO[AccountId]
 }
 
-object PlayerService {
+object UserService {
   def apply(walletService: WalletService, persistence: PlayerPersistence) =
     new PlayerServiceImpl(walletService, persistence)
 }
@@ -18,16 +18,16 @@ object PlayerService {
 class PlayerServiceImpl(
     walletService: WalletService,
     persistence: PlayerPersistence
-) extends PlayerService {
-  override def register(playerId: PlayerId): IO[Unit] =
+) extends UserService {
+  override def register(userId: UserId): IO[Unit] =
     for {
       walletId <- walletService.createWallet
-      _ <- persistence.addPlayer(playerId, walletId)
+      _ <- persistence.addPlayer(userId, walletId)
     } yield ()
 
-  def getDefaultAccountId(playerId: PlayerId): IO[AccountId] = {
+  def getDefaultAccountId(userId: UserId): IO[AccountId] = {
     def playerNotFound =
-      IO.raiseError[AccountId](new Throwable(s"Player [${playerId.id}] not found"))
+      IO.raiseError[AccountId](new Throwable(s"User [${userId.id}] not found"))
 
     def getDefaultAccountIdForWallet(walletId: WalletId) =
       walletService.getAccountIdByCurrency(walletId, Currency.default.id)
@@ -38,7 +38,7 @@ class PlayerServiceImpl(
         )(v => IO.pure(v)))
 
     for {
-      walletId <- persistence.getPlayerWalletId(playerId)
+      walletId <- persistence.getUserWalletId(userId)
       accountId <- OptionT.fromOption[IO](walletId)
         .foldF(playerNotFound)(getDefaultAccountIdForWallet)
     } yield accountId
