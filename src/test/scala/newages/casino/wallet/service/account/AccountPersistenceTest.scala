@@ -8,9 +8,9 @@ import doobie._
 import doobie.implicits._
 import cats.effect._
 import cats.implicits.catsSyntaxOptionId
-import io.simonr.utils.docker
-import io.simonr.utils.docker.DockerPostgreService
 import io.simonr.utils.doobie.DoobiePersistence
+import io.simonr.utils.docker.DockerPostgreService
+import io.simonr.utils.docker
 import newages.casino.wallet.model.{AccountId, Amount}
 
 import scala.concurrent.ExecutionContext
