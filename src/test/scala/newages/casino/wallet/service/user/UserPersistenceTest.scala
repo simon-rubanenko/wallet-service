@@ -1,8 +1,10 @@
 package newages.casino.wallet.service.user
 
 import cats.effect.{IO, _}
+import cats.implicits.catsSyntaxOptionId
 import doobie._
 import doobie.implicits._
+import io.simonr.utils.docker
 import io.simonr.utils.docker.DockerPostgreService
 import io.simonr.utils.doobie.DoobiePersistence
 import newages.casino.wallet.model.{UserId, WalletId}
@@ -25,9 +27,11 @@ class UserPersistenceTest
 
   val db: DoobiePersistence = makeDoobiePersistence
 
+  var containerId: Option[docker.ContainerId] = None
+
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    startContainer()
+    containerId = startContainer().some
     createWalletSchema("/service/user/schema.sql")
       .transact(db.autoCommitTransactor)
       .unsafeRunSync()
@@ -35,7 +39,7 @@ class UserPersistenceTest
 
   override def afterAll(): Unit = {
     super.afterAll()
-    stopContainer()
+    containerId.foreach(stopAndRemoveContainer)
   }
 
   def createWalletSchema(schemaPath: String): doobie.ConnectionIO[Int] = {

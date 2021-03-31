@@ -18,9 +18,6 @@ val http4sV = "0.21.21"
 libraryDependencies ++= Seq(
   // logger
   "ch.qos.logback" % "logback-classic" % "1.2.3",
-//  // sttp
-//  "com.softwaremill.sttp.client3" %% "core" % sttpV,
-//  "com.softwaremill.sttp.client3" %% "async-http-client-backend-fs2" % sttpV,
   // cats
   "org.typelevel" %% "cats-core" % catsV,
   "org.typelevel" %% "cats-effect" % catsV,
@@ -51,7 +48,7 @@ libraryDependencies ++= Seq(
   "com.github.docker-java" % "docker-java" % dockerJavaV,
   "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaV,
   // somonr-utils
-  "io.simonr" %% "util-docker" % "0.1.2-SNAPSHOT"
+  "io.simonr" %% "util-docker" % "0.1.5-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(

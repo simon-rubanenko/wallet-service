@@ -7,6 +7,8 @@ import org.scalatest.matchers.should.Matchers
 import doobie._
 import doobie.implicits._
 import cats.effect._
+import cats.implicits.catsSyntaxOptionId
+import io.simonr.utils.docker
 import io.simonr.utils.docker.DockerPostgreService
 import io.simonr.utils.doobie.DoobiePersistence
 import newages.casino.wallet.model.{AccountId, Amount}
@@ -25,10 +27,11 @@ class AccountPersistenceTest
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
   val db: DoobiePersistence = makeDoobiePersistence
+  var containerId: Option[docker.ContainerId] = None
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    startContainer()
+    containerId = startContainer().some
     createAccountSchema("/service/account/schema.sql")
       .transact(db.autoCommitTransactor)
       .unsafeRunSync()
@@ -36,7 +39,7 @@ class AccountPersistenceTest
 
   override def afterAll(): Unit = {
     super.afterAll()
-    stopContainer()
+    containerId.foreach(stopAndRemoveContainer)
   }
 
   def createAccountSchema(schemaPath: String): doobie.ConnectionIO[Int] = {
