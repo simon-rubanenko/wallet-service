@@ -16,7 +16,7 @@ object UserPersistence {
 
 class PlayerPersistenceImpl(val db: DoobiePersistence) extends UserPersistence {
   def addUser(userId: UserId, walletId: WalletId): IO[Unit] =
-    sql"""insert into user.user(user_id, user_wallet_id) 
+    sql"""insert into wallet_user.user(user_id, user_wallet_id) 
          values(${userId.id}, ${walletId.id})"""
       .update
       .run
@@ -24,7 +24,7 @@ class PlayerPersistenceImpl(val db: DoobiePersistence) extends UserPersistence {
       .map(_ => ())
 
   def getUserWalletId(userId: UserId): IO[Option[WalletId]] =
-    sql"""select user_wallet_id from user.user
+    sql"""select user_wallet_id from wallet_user.user
           where user_id = ${userId.id}"""
       .query[WalletId]
       .option

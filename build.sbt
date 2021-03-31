@@ -2,6 +2,8 @@ name := "newages.wallet"
 version := "0.1"
 scalaVersion := "2.13.5"
 
+parallelExecution in Test := false
+
 val akkaV = "2.6.13"
 val akkaHttpV = "10.2.4"
 val circeV = "0.12.3"

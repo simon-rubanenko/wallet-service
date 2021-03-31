@@ -58,7 +58,7 @@ class UserPersistenceTest
     userPersistence.addUser(userId, walletId)
       .unsafeRunSync() shouldEqual ()
 
-    sql"""select user_id from user.user where user_id = ${userId.id}"""
+    sql"""select user_id from wallet_user.user where user_id = ${userId.id}"""
       .query[UserId]
       .option
       .transact(db.autoCommitTransactor)
