@@ -48,7 +48,7 @@ libraryDependencies ++= Seq(
   "com.github.docker-java" % "docker-java" % dockerJavaV,
   "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaV,
   // somonr-utils
-  "io.simonr" %% "util-docker" % "0.1.11-SNAPSHOT"
+  "io.simonr" %% "util-docker" % "0.1.12-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(
