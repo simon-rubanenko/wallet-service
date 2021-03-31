@@ -11,9 +11,9 @@ jobs:
       - image: circleci/openjdk:11-jdk
 
       - image: circleci/postgres:12.6-alpine
-        auth:
-          username: postgreuser
-          password: defaultpassword
+        environment:
+          POSTGRES_USER: postgreuser
+          POSTGRES_PASSWORD: defaultpassword
 
     environment:
       # Customize the JVM maximum heap limit
