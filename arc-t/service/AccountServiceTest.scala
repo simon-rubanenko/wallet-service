@@ -1,10 +1,8 @@
 package newages.casino.wallet.service
 
-import akka.actor.testkit.typed.scaladsl.{ActorTestKit, ActorTestKitBase}
-import akka.util.Timeout
 import com.typesafe.config.ConfigFactory
+import io.simonr.wallet.service.account.AccountServiceImpl
 import newages.casino.wallet.model.{AccountId, ActionResult}
-import newages.casino.wallet.service.account.AccountServiceImpl
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers

@@ -1,5 +1,5 @@
-name := "newages.wallet"
-version := "0.1"
+name := "io.simonr.wallet"
+version := "0.1.1"
 scalaVersion := "2.13.5"
 
 parallelExecution in Test := false
@@ -48,7 +48,7 @@ libraryDependencies ++= Seq(
   "com.github.docker-java" % "docker-java" % dockerJavaV,
   "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaV,
   // somonr-utils
-  "io.simonr" %% "util-docker" % "0.1.14-SNAPSHOT"
+  "io.simonr" %% "util-docker" % "0.1.15-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(

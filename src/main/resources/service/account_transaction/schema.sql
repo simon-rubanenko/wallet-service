@@ -1,6 +1,6 @@
-create schema account_transaction;
+create schema wallet_transaction;
 
-create table account_transaction.transaction(
+create table wallet_transaction.transaction(
     transaction_id varchar(100) primary key,
     transaction_account_from varchar(100) not null,
     transaction_account_to varchar(100) not null,

@@ -1,14 +1,9 @@
 package newages.casino.wallet.service
 
-import akka.Done
-import akka.actor.typed.scaladsl.AskPattern.Askable
-import akka.actor.typed.{ActorRef, ActorSystem}
-import akka.cluster.sharding.typed.scaladsl.{ClusterSharding, Entity, EntityTypeKey}
-import akka.util.Timeout
+import io.simonr.wallet.service.account.AccountService
 import newages.casino.wallet.model.{AccountId, ActionResult}
 import newages.casino.wallet.persistence.account.AccountCommands.{AccountCommand, CreateAccount}
 import newages.casino.wallet.persistence.account.AccountEntity
-import newages.casino.wallet.service.account.AccountService
 
 import scala.concurrent.Future
 
