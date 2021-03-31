@@ -49,7 +49,7 @@ libraryDependencies ++= Seq(
   "com.github.docker-java" % "docker-java" % dockerJavaV,
   "com.github.docker-java" % "docker-java-transport-httpclient5" % dockerJavaV,
   // somonr-utils
-  "io.simonr" %% "util-docker" % "0.1.1-SNAPSHOT"
+  "io.simonr" %% "util-docker" % "0.1.2-SNAPSHOT"
 )
 
 scalacOptions ++= Seq(
@@ -60,3 +60,5 @@ scalacOptions ++= Seq(
   "-feature",
   "-language:implicitConversions"
 )
+
+resolvers += "Artifactory" at "https://simonr.jfrog.io/artifactory/sbt-proxy/"
