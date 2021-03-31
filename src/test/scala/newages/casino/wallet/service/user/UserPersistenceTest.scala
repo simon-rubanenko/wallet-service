@@ -27,11 +27,9 @@ class UserPersistenceTest
 
   val db: DoobiePersistence = makeDoobiePersistence
 
-  var containerId: Option[docker.ContainerId] = None
-
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    containerId = startContainer().some
+    smartStartPostgreDocker()
     createWalletSchema("/service/user/schema.sql")
       .transact(db.autoCommitTransactor)
       .unsafeRunSync()
@@ -39,7 +37,7 @@ class UserPersistenceTest
 
   override def afterAll(): Unit = {
     super.afterAll()
-    containerId.foreach(stopAndRemoveContainer)
+    smartStopPostgreDocker()
   }
 
   def createWalletSchema(schemaPath: String): doobie.ConnectionIO[Int] = {

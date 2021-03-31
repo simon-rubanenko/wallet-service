@@ -27,11 +27,10 @@ class AccountPersistenceTest
   implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
 
   val db: DoobiePersistence = makeDoobiePersistence
-  var containerId: Option[docker.ContainerId] = None
 
   override protected def beforeAll(): Unit = {
     super.beforeAll()
-    containerId = startContainer().some
+    smartStartPostgreDocker()
     createAccountSchema("/service/account/schema.sql")
       .transact(db.autoCommitTransactor)
       .unsafeRunSync()
@@ -39,7 +38,7 @@ class AccountPersistenceTest
 
   override def afterAll(): Unit = {
     super.afterAll()
-    containerId.foreach(stopAndRemoveContainer)
+    smartStopPostgreDocker()
   }
 
   def createAccountSchema(schemaPath: String): doobie.ConnectionIO[Int] = {
