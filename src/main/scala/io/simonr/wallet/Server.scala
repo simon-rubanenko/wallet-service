@@ -50,7 +50,7 @@ object Server extends IOApp {
       routers = RouteBuilder.makeRoute(walletController)
 
       result <- BlazeServerBuilder[IO](httpContext)
-        .bindHttp(8080, "localhost")
+        .bindHttp(cf.getInt("http.port"), cf.getString("http.interface"))
         .withHttpApp(routers.orNotFound)
         .serve
         .compile
