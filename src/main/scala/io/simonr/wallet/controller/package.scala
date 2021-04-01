@@ -9,7 +9,7 @@ package object controller {
 
   case class Error(message: String) extends AnyVal
 
-  case class Balance(amount: BigDecimal) extends AnyVal
+  case class Balance(balance: BigDecimal) extends AnyVal
 
   trait JsonEncoders {
     implicit lazy val errorEncoder: Encoder[Error] = deriveEncoder
