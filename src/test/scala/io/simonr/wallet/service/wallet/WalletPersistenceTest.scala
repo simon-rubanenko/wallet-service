@@ -66,7 +66,7 @@ class WalletPersistenceTest extends AnyFunSuite with Matchers with BeforeAndAfte
   test("should add account") {
     val walletPersistence = WalletPersistence(db)
     val walletId = WalletId("wallet#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val currency = Currency.default
     walletPersistence
       .addAccount(walletId, accountId, currency.id)
@@ -92,7 +92,7 @@ class WalletPersistenceTest extends AnyFunSuite with Matchers with BeforeAndAfte
   test("should return account by currency id") {
     val walletPersistence = WalletPersistence(db)
     val walletId = WalletId("wallet#2")
-    val accountId = AccountId("acc#2")
+    val accountId = AccountId("acc2")
     val currency = Currency.default
     val (acc1, acc2) = (for {
       _ <- walletPersistence.addWallet(walletId)

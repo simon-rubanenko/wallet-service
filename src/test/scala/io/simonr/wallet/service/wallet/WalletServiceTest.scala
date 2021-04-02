@@ -1,6 +1,6 @@
 package io.simonr.wallet.service.wallet
 
-import cats.effect.IO
+import cats.effect.{ContextShift, IO}
 import io.simonr.wallet.model.{AccountId, Currency, CurrencyId, WalletId}
 import io.simonr.wallet.service.GeneratorService
 import io.simonr.wallet.service.account.AccountService
@@ -8,6 +8,8 @@ import org.mockito.cats.MockitoCats.whenF
 import org.mockito.scalatest.{MockitoSugar, ResetMocksAfterEachTest}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
+
+import scala.concurrent.ExecutionContext
 
 class WalletServiceTest
     extends AnyFunSuite
@@ -19,9 +21,11 @@ class WalletServiceTest
   val generatorMock: GeneratorService[IO, String] = mock[GeneratorService[IO, String]]
   val accountServiceMock: AccountService = mock[AccountService]
 
+  implicit val cs: ContextShift[IO] = IO.contextShift(ExecutionContext.global)
+
   test("should create wallet with account") {
     val walletId = WalletId("wallet#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val currencyId = Currency.default.id
     whenF(generatorMock.nextId).thenReturn(walletId.id)
     whenF(persistenceMock.addWallet(walletId)).thenReturn(())
@@ -38,7 +42,7 @@ class WalletServiceTest
 
   test("should return account by currency id") {
     val walletId = WalletId("wallet#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val currencyId = Currency.default.id
     whenF(generatorMock.nextId).thenReturn(walletId.id)
     whenF(persistenceMock.addWallet(walletId)).thenReturn(())

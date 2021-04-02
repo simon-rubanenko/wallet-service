@@ -5,7 +5,6 @@ scalaVersion := "2.13.5"
 parallelExecution in Test := false
 
 val akkaV = "2.6.13"
-val akkaHttpV = "10.2.4"
 val circeV = "0.12.3"
 val scalasticV = "3.2.5"
 val catsV = "2.2.0"
@@ -21,6 +20,8 @@ libraryDependencies ++= Seq(
   // cats
   "org.typelevel" %% "cats-core" % catsV,
   "org.typelevel" %% "cats-effect" % catsV,
+  // Akka
+  "com.typesafe.akka" %% "akka-actor-typed" % akkaV,
   // Circe
   "io.circe" %% "circe-core" % circeV,
   "io.circe" %% "circe-generic" % circeV,

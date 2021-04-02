@@ -51,11 +51,8 @@ class WalletControllerImpl(
     val userId = PlayerIdValidator.parse(userIdStr)
     (for {
       accountId <- playerService.getDefaultAccountId(userId)
-      balance <- accountService.getBalance(accountId)
-      _ <-
-        if (balance.value < amount) IO.raiseError(new Throwable("Insufficient funds")) else IO.unit
-      newBalance <- accountService.withdraw(accountId, Amount(amount))
-    } yield newBalance)
+      balance <- accountService.withdraw(accountId, Amount(amount))
+    } yield balance)
       .attempt
       .map(proceedAttempt)
   }

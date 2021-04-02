@@ -53,7 +53,7 @@ class AccountPersistenceTest extends AnyFunSuite with Matchers with BeforeAndAft
 
   test("should make deposit on account") {
     val accountPersistence = AccountPersistence(db)
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val (balance1, balance2) = (for {
       _ <- accountPersistence.addAccount(accountId)
       balance1 <- accountPersistence.deposit(accountId, Amount(123.45))
@@ -67,7 +67,7 @@ class AccountPersistenceTest extends AnyFunSuite with Matchers with BeforeAndAft
 
   test("should make withdraw from account") {
     val accountPersistence = AccountPersistence(db)
-    val accountId = AccountId("acc#2")
+    val accountId = AccountId("acc2")
     val (balance1, balance2, balance3) = (for {
       _ <- accountPersistence.addAccount(accountId)
       balance1 <- accountPersistence.deposit(accountId, Amount(123.45))
@@ -79,6 +79,19 @@ class AccountPersistenceTest extends AnyFunSuite with Matchers with BeforeAndAft
     balance1 shouldEqual Amount(123.45)
     balance2 shouldEqual balance3
     balance3 shouldEqual Amount(23.45)
+  }
+
+  test("should catch throw Insufficient funds") {
+    val accountPersistence = AccountPersistence(db)
+    val accountId = AccountId("acc2")
+    assertThrows[Throwable] {
+      (for {
+        _ <- accountPersistence.addAccount(accountId)
+        _ <- accountPersistence.deposit(accountId, Amount(123.45))
+        _ <- accountPersistence.withdraw(accountId, Amount(200.00))
+      } yield ())
+        .unsafeRunSync()
+    }
   }
 
 }

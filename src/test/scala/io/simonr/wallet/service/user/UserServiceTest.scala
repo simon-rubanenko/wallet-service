@@ -32,7 +32,7 @@ class UserServiceTest
   test("should return default account id for user") {
     val userId = UserId("user#1")
     val walletId = WalletId("wallet#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val currencyId = Currency.default.id
     whenF(persistenceMock.addUser(userId, walletId)).thenReturn(())
     whenF(persistenceMock.getUserWalletId(userId)).thenReturn(Some(walletId))

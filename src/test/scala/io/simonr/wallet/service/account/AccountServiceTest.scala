@@ -18,7 +18,7 @@ class AccountServiceTest
   val generatorMock: GeneratorService[IO, String] = mock[GeneratorService[IO, String]]
 
   test("should add new account") {
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     whenF(generatorMock.nextId).thenReturn(accountId.id)
     whenF(persistenceMock.addAccount(accountId)).thenReturn(())
     val accountService = AccountService(generatorMock, persistenceMock)
@@ -29,7 +29,7 @@ class AccountServiceTest
   }
 
   test("should catch exception by attempt to update db") {
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val errorMessage = "some error message"
     whenF(generatorMock.nextId).thenReturn(accountId.id)
     when(persistenceMock.addAccount(accountId)).thenReturn(IO.raiseError(new Throwable))
@@ -43,7 +43,7 @@ class AccountServiceTest
   }
 
   test("should got balance") {
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val amount = Amount(12.34)
     whenF(persistenceMock.getBalance(accountId)).thenReturn(amount)
     val accountService = AccountService(generatorMock, persistenceMock)

@@ -20,7 +20,7 @@ class WalletControllerTest
 
   test("should register player") {
     val playerId = UserId("player#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val balance = Amount(12.34)
     whenF(playerService.register(playerId)).thenReturn(())
     whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
@@ -39,7 +39,7 @@ class WalletControllerTest
 
   test("should withdraw funds") {
     val playerId = UserId("player#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val amount = Amount(12.34)
     whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
     whenF(accountService.getBalance(accountId)).thenReturn(amount)
@@ -55,26 +55,9 @@ class WalletControllerTest
     verify(accountService, times(1)).withdraw(accountId, amount)
   }
 
-  test("should throw Insufficient funds") {
-    val playerId = UserId("player#1")
-    val accountId = AccountId("acc#1")
-    val amount = Amount(12.34)
-    whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
-    whenF(accountService.getBalance(accountId)).thenReturn(amount.copy(value = amount.value - 1.0))
-
-    val walletController = WalletController(playerService, accountService)
-    val result = walletController
-      .withdraw(playerId.id, amount.value)
-      .unsafeRunSync()
-    result shouldEqual Error("Insufficient funds").asLeft
-
-    verify(playerService, times(1)).getDefaultAccountId(playerId)
-    verify(accountService, times(1)).getBalance(accountId)
-  }
-
   test("should return balance") {
     val playerId = UserId("player#1")
-    val accountId = AccountId("acc#1")
+    val accountId = AccountId("acc1")
     val amount = Amount(12.34)
     whenF(playerService.getDefaultAccountId(playerId)).thenReturn(accountId)
     whenF(accountService.getBalance(accountId)).thenReturn(amount)

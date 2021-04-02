@@ -7,7 +7,6 @@ import io.simonr.wallet.service.account.AccountService
 
 trait WalletService {
   def createWallet: IO[WalletId]
-
   def getAccountIdByCurrency(walletId: WalletId, currencyId: CurrencyId): IO[Option[AccountId]]
 }
 
